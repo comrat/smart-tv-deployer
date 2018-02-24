@@ -1,21 +1,22 @@
 #! /bin/bash
 
 function deploy_webos() {
+	APP=$1
 	cd $WEBOS_CLI_TV
-	./ares-package $1
-	echo $1
+	./ares-package $APP
 	if [ "$#" -ge 1 ]; then
-		./ares-install com.$1.app_1.0.0_all.ipk -d $2
-		./ares-launch com.$1.app -d $2
+		./ares-install com.$APP.app_1.0.0_all.ipk -d $2
+		./ares-launch com.$APP.app -d $2
 	else
-		./ares-install com.$1.app_1.0.0_all.ipk
-		./ares-launch com.$1.app
+		./ares-install com.$APP.app_1.0.0_all.ipk
+		./ares-launch com.$APP.app
 	fi
 }
 
 function cd_and_zip_dir() {
 	DIR=$1
 	PLATFORM=$2
+
 	if [ -d "$DIR" ]; then
 		cd $DIR
 		if [ -e "$PLATFORM.zip" ]; then
@@ -29,9 +30,12 @@ function cd_and_zip_dir() {
 	return $retval
 }
 
-./qmlcore/build -p $2 -m
+APP=$1
+PLATFORM=$2
 
-if [ "$2" == "webos" ]; then
+./qmlcore/build -p $PLATFORM -m
+
+if [ "$PLATFORM" == "webos" ]; then
 	if [ -z ${WEBOS_CLI_TV+x} ]; then
 		echo "WEBOS_CLI_TV is unset. Probably webOS SDK wasn't installed"
 		exit 1
@@ -39,18 +43,18 @@ if [ "$2" == "webos" ]; then
 
 	echo "============== WEBOS DEPLOYMENT =============="
 	echo "Update deploy directory..."
-	rm -rf "$WEBOS_CLI_TV/$1"
-	cp -r ./build.webos "$WEBOS_CLI_TV/$1"
+	rm -rf "$WEBOS_CLI_TV/$APP"
+	cp -r ./build.webos "$WEBOS_CLI_TV/$APP"
 	echo "Build and run package..."
 
 	if [ "$#" -ge 1 ]; then
-		deploy_webos $1 $3
+		deploy_webos $APP $3
 	else
-		deploy_webos $1
+		deploy_webos $APP
 	fi
 fi
 
-if [ "$2" == "tizen" ]; then
+if [ "$PLATFORM" == "tizen" ]; then
 	if [ "$#" -le 1 ]; then
 		echo "Please set target device name in second argument"
 		echo "You can see available devices with command 'sdb devices'"
@@ -80,39 +84,39 @@ if [ "$2" == "tizen" ]; then
 	echo "If you see 'Failed to install Tizen application.' log up there don's worry, check 'My App' list on target device your app may be installed (see https://stackoverflow.com/a/42966767)"
 fi
 
-if [ "$2" == "androidtv" ]; then
+if [ "$PLATFORM" == "androidtv" ]; then
 	echo "============== ANDROID DEPLOYMENT =============="
 	cd ./build.androidtv
 	echo "Clean..."
-	rm -rf ./$1
+	rm -rf ./$APP
 	echo "Run build.py..."
 
 	if [ "$3" == "release" ]; then
 		echo "Release"
-		./custom_build.py --app $1 --title $1
+		./custom_build.py --app $APP --title $APP
 	else
 		echo "Debug"
-		./custom_build.py --app $1 --title $1 --debug
+		./custom_build.py --app $APP --title $APP --debug
 	fi
 	echo "Install via adb..."
-	adb install -r ./$1/platforms/android/build/outputs/apk/debug/android-debug.apk
+	adb install -r ./$APP/platforms/android/build/outputs/apk/debug/android-debug.apk
 fi
 
-if [ "$2" == "netcast" ]; then
+if [ "$PLATFORM" == "netcast" ]; then
 	echo "============== NETCAST DEPLOYMENT =============="
-	cd_and_zip_dir ./build.netcast $1
+	cd_and_zip_dir ./build.netcast $APP
 	retval=$?
 	if [ $retval == 0 ]; then
 		echo "Done"
-		echo "Now you must add DRM subscription to your app, upload build.netcast/$1.zip here 'http://developer.lge.com/apptest/retrieveApptestOSList.dev'"
+		echo "Now you must add DRM subscription to your app, upload build.netcast/$APP.zip here 'http://developer.lge.com/apptest/retrieveApptestOSList.dev'"
 	else
 		echo "ERROR: Failed to deploy netcast"
 	fi
 fi
 
-if [ "$2" == "orsay" ]; then
+if [ "$PLATFORM" == "orsay" ]; then
 	echo "============== ORSAY DEPLOYMENT =============="
-	cd_and_zip_dir ./build.netcast $1
+	cd_and_zip_dir ./build.netcast $APP
 	retval=$?
 	if [ $retval == 0 ]; then
 		echo "Done"
