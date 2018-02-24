@@ -13,6 +13,22 @@ function deploy_webos() {
 	fi
 }
 
+function cd_and_zip_dir() {
+	DIR=$1
+	PLATFORM=$2
+	if [ -d "$DIR" ]; then
+		cd $DIR
+		if [ -e "$PLATFORM.zip" ]; then
+			rm $PLATFORM.zip
+		fi
+		zip -r $PLATFORM.zip *
+		retval=0
+	else
+		retval=1
+	fi
+	return $retval
+}
+
 ./qmlcore/build -p $2 -m
 
 if [ "$2" == "webos" ]; then
@@ -84,18 +100,24 @@ fi
 
 if [ "$2" == "netcast" ]; then
 	echo "============== NETCAST DEPLOYMENT =============="
-	cd ./build.netcast
-	rm $1.zip
-	zip -r $1.zip *
-	echo "Done"
-	echo "Now you must add DRM subscription to your app, upload build.android.netcast/$1.zip here 'http://developer.lge.com/apptest/retrieveApptestOSList.dev'"
+	cd_and_zip_dir ./build.netcast $1
+	retval=$?
+	if [ $retval == 0 ]; then
+		echo "Done"
+		echo "Now you must add DRM subscription to your app, upload build.netcast/$1.zip here 'http://developer.lge.com/apptest/retrieveApptestOSList.dev'"
+	else
+		echo "ERROR: Failed to deploy netcast"
+	fi
 fi
 
 if [ "$2" == "orsay" ]; then
-	echo "============== SMARTTV DEPLOYMENT =============="
-	cd ./build.orsay
-	rm $1.zip
-	zip -r $1.zip *
-	echo "Done"
-	echo "Now you can upload zip file on your server or unzip it on USB and insert it in your samsung smart TV"
+	echo "============== ORSAY DEPLOYMENT =============="
+	cd_and_zip_dir ./build.netcast $1
+	retval=$?
+	if [ $retval == 0 ]; then
+		echo "Done"
+		echo "Now you can upload zip file on your server or unzip it on USB and insert it in your samsung smart TV"
+	else
+		echo "ERROR: Failed to deploy orsay"
+	fi
 fi
