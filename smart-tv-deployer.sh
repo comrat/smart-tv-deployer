@@ -47,8 +47,9 @@ if [ "$PLATFORM" == "webos" ]; then
 	cp -r ./build.webos "$WEBOS_CLI_TV/$APP"
 	echo "Build and run package..."
 
+	TV_NAME=$3
 	if [ "$#" -ge 1 ]; then
-		deploy_webos $APP $3
+		deploy_webos $APP $TV_NAME
 	else
 		deploy_webos $APP
 	fi
@@ -78,8 +79,12 @@ if [ "$PLATFORM" == "tizen" ]; then
 
 	cd ./build.tizen
 	rm *.wgt
-	tizen package -t wgt -s $4
-	tizen install -n *.wgt -t $3
+
+	TV_NAME=$3
+	PROFILE=$4
+
+	tizen package -t wgt -s $PROFILE
+	tizen install -n *.wgt -t $TV_NAME
 
 	echo "If you see 'Failed to install Tizen application.' log up there don's worry, check 'My App' list on target device your app may be installed (see https://stackoverflow.com/a/42966767)"
 fi
