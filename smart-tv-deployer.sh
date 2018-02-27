@@ -98,10 +98,10 @@ if [ "$PLATFORM" == "androidtv" ]; then
 
 	if [ "$3" == "release" ]; then
 		echo "Release"
-		./custom_build.py --app $APP --title $APP
+		./build.py --app $APP --title $APP
 	else
 		echo "Debug"
-		./custom_build.py --app $APP --title $APP --debug
+		./build.py --app $APP --title $APP --debug
 	fi
 	echo "Install via adb..."
 	adb install -r ./$APP/platforms/android/build/outputs/apk/debug/android-debug.apk
