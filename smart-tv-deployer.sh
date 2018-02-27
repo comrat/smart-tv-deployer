@@ -91,20 +91,23 @@ fi
 
 if [ "$PLATFORM" == "androidtv" ]; then
 	echo "============== ANDROID DEPLOYMENT =============="
-	cd ./build.androidtv
-	echo "Clean..."
-	rm -rf ./$APP
-	echo "Run build.py..."
+	ANDROID_BUILD_DIR="./build.androidtv"
+	if [ -d "$ANDROID_BUILD_DIR" ]; then
+		cd ./build.androidtv
 
-	if [ "$3" == "release" ]; then
-		echo "Release"
+		if [ -d "$APP" ]; then
+			echo "Clean..."
+			rm -rf ./$APP
+		fi
+
+		echo "Run build.py..."
 		./build.py --app $APP --title $APP
+
+		echo "Install via adb..."
+		adb install -r ./$APP/platforms/android/build/outputs/apk/debug/android-debug.apk
 	else
-		echo "Debug"
-		./build.py --app $APP --title $APP --debug
+		echo "Failed to deploy androidtv: $ANDROID_BUILD_DIR not found"
 	fi
-	echo "Install via adb..."
-	adb install -r ./$APP/platforms/android/build/outputs/apk/debug/android-debug.apk
 fi
 
 if [ "$PLATFORM" == "netcast" ]; then
