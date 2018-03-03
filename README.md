@@ -1,11 +1,6 @@
 # smart-tv-deployer
-BASH script to deploy
-[pureqml](https://github.com/pureqml/qmlcore) apps on SmartTV
-
-# Usage
-```
-./smart-tv-deployer.sh APP_TITLE TARGET_PLATFORM [ADDITIONAL_PARAMS]
-```
+Python script to deploy
+[pureqml](https://github.com/pureqml/qmlcore) apps on SmartTV. You can also run Bash version of the script
 
 # Supported platforms
 * LG WebOS
@@ -13,3 +8,10 @@ BASH script to deploy
 * Samsung Tizen
 * Samsung Orsay
 * AndroidTV
+
+# Quick start
+Just run script:
+```
+./smart-tv-deployer.py -p TARGET_PLATFORM
+```
+<i>TARGET_PLATFORM</i> - platform you wont to deploy possible possible values are webos|netcast|tizen|orsay|androidtv
