@@ -89,6 +89,27 @@ if [ "$PLATFORM" == "tizen" ]; then
 	echo "If you see 'Failed to install Tizen application.' log up there don's worry, check 'My App' list on target device your app may be installed (see https://stackoverflow.com/a/42966767)"
 fi
 
+if [ "$PLATFORM" == "android" ]; then
+	echo "============== ANDROID DEPLOYMENT =============="
+	ANDROID_BUILD_DIR="./build.android"
+	if [ -d "$ANDROID_BUILD_DIR" ]; then
+		cd ./build.android
+
+		if [ -d "$APP" ]; then
+			echo "Clean..."
+			rm -rf ./$APP
+		fi
+
+		echo "Run build.py..."
+		./build.py --app $APP --title $APP
+
+		echo "Install via adb..."
+		adb install -r ./$APP/platforms/android/build/outputs/apk/debug/android-debug.apk
+	else
+		echo "Failed to deploy android: $ANDROID_BUILD_DIR not found"
+	fi
+fi
+
 if [ "$PLATFORM" == "androidtv" ]; then
 	echo "============== ANDROID DEPLOYMENT =============="
 	ANDROID_BUILD_DIR="./build.androidtv"
