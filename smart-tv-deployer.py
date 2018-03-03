@@ -77,6 +77,37 @@ def deploy_tizen(app, version, tv, profile):
         print "'tizen' command not defined. If you've installed tizen-studio already export it's 'bin' directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin"
 
 
+def zip_dir(app, version, platform):
+    result_zip = app + "_" + version + ".zip"
+    platform_folder = "build." + platform
+    if path.exists(platform_folder):
+        os.chdir(platform_folder)
+        if path.exists(result_zip):
+            os.system('rm %s' %(result_zip))
+        os.system('zip -r %s *' %(result_zip))
+        return True
+    else:
+        return False
+
+
+def deploy_orsay(app, version):
+    result_zip = app + "_" + version + ".zip"
+    if zip_dir(app, version, "orsay"):
+        print "Done"
+        print "Now you can upload zip file on your server or unzip it on USB and insert it in your samsung smart TV"
+    else:
+        print "ERROR: Failed to deploy orsay"
+
+
+def deploy_netcast(app, version):
+    result_zip = app + "_" + version + ".zip"
+    if zip_dir(app, version, "netcast"):
+        print "Done"
+        print "Now you must add DRM subscription to your app, upload build.netcast/" + result_zip + " here 'http://developer.lge.com/apptest/retrieveApptestOSList.dev'"
+    else:
+        print "ERROR: Failed to deploy netcast"
+
+
 parser = argparse.ArgumentParser('smart-tv-deploy script')
 parser.add_argument('--platform', '-p', help='target platform: webos|netcast|tizen|orsay|androidtv', dest='platform')
 parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', dest='tizen_profile')
@@ -106,8 +137,10 @@ if path.exists(manifest_path):
         deploy_tizen(title, version, tv, tizen_profile)
     elif platform == "netcast":
         print "============== NETCAST DEPLOYMENT =============="
+        deploy_netcast(title, version)
     elif platform == "orsay":
         print "============== ORSAY DEPLOYMENT =============="
+        deploy_orsay(title, version)
     elif platform == "androidtv":
         print "============== ANDROIDTV DEPLOYMENT =============="
     else:
