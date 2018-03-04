@@ -10,7 +10,7 @@ Python script to deploy
 * AndroidTV
 
 # Quick start
-Just run script:
+Place script in your PureQML project root (or use symbol link). Just run script:
 ```
 ./smart-tv-deployer.py -p TARGET_PLATFORM
 ```
@@ -18,7 +18,14 @@ Just run script:
 # Platform specific deployment
 Each platform has some features during deploy
 ### LG WebOS
-TODO: add description
+To install app on WebOS Smart TV you need to install [WebOS SDK](http://webostv.developer.lge.com/sdk/download/download-sdk/) (at least CLI).
+Than you must enable developer mode on your TV for details see [this link](http://webostv.developer.lge.com/develop/app-test/).
+
+After configuring TV run the script:
+```
+./smart-tv-deployer.py -p webos -t tvName
+```
+<i>tvName</i> - name of TV which you've set in ``` ares-setup-device ```
 ### LG NetCast
 TODO: add description
 ### Samsung Tizen
