@@ -44,6 +44,15 @@ Follow this steps to install your app zip file on your TV:
 ### Samsung Tizen
 TODO: add description
 ### Samsung Orsay
-TODO: add description
+Run the script:
+```
+./smart-tv-deployer.py -p orsay
+```
+After deploying all files will be archived in zip file in ```build.orsay/<title>_<version>.zip``` where
+
+* ```title``` - is app title from ```.manifest``` if it wasn't declared it will be called ```app``` by default
+* ```version``` - app version from the manifest or ```1.0.0``` if it wasn't defined
+
+To run the app on your SmartTV just unzip archive in USB storage and stick it in your TV and open your app in 'My Apps'
 ### AndroidTV
 TODO: add description
