@@ -108,6 +108,22 @@ def deploy_netcast(app, version):
         print "ERROR: Failed to deploy netcast"
 
 
+def deploy_android(platform, app):
+    platform_folder = "./build." + platform
+    os.system('cd %s' %(platform_folder))
+    os.chdir(platform_folder)
+
+    if path.exists(app):
+        print "Clean..."
+        os.system('rm -rf %s' %(app))
+
+    print "Run build.py..."
+    os.system('./build.py --app %s --title %s' %(app, app))
+
+    print "Install via adb..."
+    os.system('adb install -r ./%s/platforms/android/build/outputs/apk/debug/android-debug.apk' %(app))
+
+
 parser = argparse.ArgumentParser('smart-tv-deploy script')
 parser.add_argument('--platform', '-p', help='target platform: webos|netcast|tizen|orsay|androidtv', dest='platform')
 parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', dest='tizen_profile')
@@ -143,6 +159,10 @@ if path.exists(manifest_path):
         deploy_orsay(title, version)
     elif platform == "androidtv":
         print "============== ANDROIDTV DEPLOYMENT =============="
+        deploy_android("androidtv", title)
+    elif platform == "android":
+        print "============== ANDROID DEPLOYMENT =============="
+        deploy_android("android", title)
     else:
         print "Unknown platform:", platform
 else:
