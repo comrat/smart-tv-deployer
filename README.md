@@ -55,4 +55,9 @@ After deploying all files will be archived in zip file in ```build.orsay/<title>
 
 To run the app on your SmartTV just unzip archive in USB storage and stick it in your TV and open your app in 'My Apps'
 ### AndroidTV
-TODO: add description
+To build android projects you need to install [cordova](https://cordova.apache.org/) first. Then run the script:
+```
+./smart-tv-deployer.py -p androidtv
+```
+The result apk will be located in path: ```./build.androidtv/<your_app_title>/platforms/android/build/outputs/apk/debug/android-debug.apk``` where
+* ```your_app_title``` - your app title from ```.manifest``` file
