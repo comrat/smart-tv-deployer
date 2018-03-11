@@ -56,7 +56,7 @@ def deploy_tizen(app, version, tv, profile):
         sys.exit(1)
 
     if profile is None:
-        print "Please set profile in --profile or -p flag"
+        print "Please set profile in --tizen-profile or -tp flag"
         print "To install your app on TV your result .wgt file must be signed by your profile certificate"
         print "First of all you must generate certificate or add existed with tizen certificate manager"
         print "After that provide path to tizen-studio profiles: tizen cli-config -g profiles.path='/home/username/tizen-workspace/.metadata/.plugins/org.tizen.common.sign/profiles.xml'"
