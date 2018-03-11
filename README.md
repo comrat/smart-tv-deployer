@@ -42,7 +42,25 @@ Follow this steps to install your app zip file on your TV:
 * stick USB storage in your Smart TV and open "My Apps" there and find your app in USB part, for more details see [this guide](http://webostv.developer.lge.com/download_file/view_inline/3513/)
 
 ### Samsung Tizen
-TODO: add description
+To deploy tuzen projects you need [Tizen Studio](https://developer.tizen.org/ko/development/tizen-studio/download?langredirect=1) to install.
+Then you must generate certificate or add existed with [tizen certificate manager](https://developer.tizen.org/ko/development/visual-studio-tools-tizen/tools/certificate-manager?langredirect=1).
+After that configure path to tizen-studio profiles:
+
+```tizen cli-config -g profiles.path='/home/username/tizen-workspace/.metadata/.plugins/org.tizen.common.sign/profiles.xml'```
+
+To deploy your app on TV you need to connect to it first via [sdb](https://developer.tizen.org/ko/development/tizen-studio/web-tools/running-and-testing-your-app/sdb?langredirect=1). For example if your TV IP address is ```192.168.1.1``` the considered command will be ```sdb connect 192.168.1.1:26101```
+
+Now you must figure out your TV name. You can get it from available devices list via command:```sdb devices```
+
+Finally we can build our project:
+
+```
+./smart-tv-deployer.py -p tizen --tizen-profile <PROFILE_PATH> --tv <TV_NAME>
+```
+Where
+* ```PROFILE_PATH``` - is path to the to the tizen profile
+* ```TV_NAME``` - TV name from ```sdb devices```
+
 ### Samsung Orsay
 Run the script:
 ```
