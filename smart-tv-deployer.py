@@ -108,7 +108,7 @@ def deploy_netcast(app, version):
         print "ERROR: Failed to deploy netcast"
 
 
-def deploy_android(platform, app):
+def deploy_android(platform, app, release):
     platform_folder = "./build." + platform
     os.system('cd %s' %(platform_folder))
     os.chdir(platform_folder)
@@ -118,7 +118,10 @@ def deploy_android(platform, app):
         os.system('rm -rf %s' %(app))
 
     print "Run build.py..."
-    os.system('./build.py --app %s --title %s' %(app, app))
+    if release:
+        os.system('./build.py --app %s --title %s --release' %(app, app))
+    else:
+        os.system('./build.py --app %s --title %s' %(app, app))
 
     print "Install via adb..."
     os.system('adb install -r ./%s/platforms/android/build/outputs/apk/debug/android-debug.apk' %(app))
@@ -159,10 +162,10 @@ if path.exists(manifest_path):
         deploy_orsay(title, version)
     elif platform == "androidtv":
         print "============== ANDROIDTV DEPLOYMENT =============="
-        deploy_android("androidtv", title)
+        deploy_android("androidtv", title, release)
     elif platform == "android":
         print "============== ANDROID DEPLOYMENT =============="
-        deploy_android("android", title)
+        deploy_android("android", title, release)
     else:
         print "Unknown platform:", platform
 else:
