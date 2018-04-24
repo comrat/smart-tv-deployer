@@ -73,7 +73,7 @@ def deploy_tizen(app, version, tv, profile):
 		os.system('tizen package -t wgt -s %s' %(profile))
 		os.system('tizen install -n %s.wgt -t %s' %(result_wgt, tv))
 		print "If you see 'Failed to install Tizen application.' log up there don's worry, check 'My App' list on target device your app may be installed (see https://stackoverflow.com/a/42966767 for details)"
-	    else:
+	else:
 		print "'tizen' command not defined. If you've installed tizen-studio already export it's 'bin' directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin"
 
 
@@ -131,12 +131,14 @@ parser = argparse.ArgumentParser('smart-tv-deploy script')
 parser.add_argument('--platform', '-p', help='target platform: webos|netcast|tizen|orsay|androidtv', dest='platform')
 parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', dest='tizen_profile')
 parser.add_argument('--tv', '-t', help='TV name', dest='tv')
+parser.add_argument('--release', '-r', help='build release apk for android platform', dest='release', default=False)
 args = parser.parse_args()
 
 manifest_path = '.manifest'
 tizen_profile = args.tizen_profile
 platform = args.platform
 tv = args.tv
+release = args.release
 
 if platform is None:
 	print "Provide platform name: ./smart-tv-deployer.py -p <PLATFORM_NAME>"
