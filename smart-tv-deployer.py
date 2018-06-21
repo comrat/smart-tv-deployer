@@ -128,6 +128,7 @@ def deploy_android(platform, app, release):
 
 
 parser = argparse.ArgumentParser('smart-tv-deploy script')
+parser.add_argument('--jobs', '-j', help='run N jobs in parallel', dest='jobs', default=1, nargs='?')
 parser.add_argument('--platform', '-p', help='target platform: webos|netcast|tizen|orsay|androidtv', dest='platform')
 parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', dest='tizen_profile')
 parser.add_argument('--tv', '-t', help='TV name', dest='tv')
@@ -139,6 +140,7 @@ tizen_profile = args.tizen_profile
 platform = args.platform
 tv = args.tv
 release = args.release
+jobs = args.jobs
 
 if platform is None:
 	print "Provide platform name: ./smart-tv-deployer.py -p <PLATFORM_NAME>"
@@ -148,7 +150,7 @@ if path.exists(manifest_path):
 	title, version = parse_manifest(manifest_path)
 	print "Manifest parsed, title:", title, "version", version
 	print "Build project..."
-	os.system('./qmlcore/build -m -p %s' %(platform))
+	os.system('./qmlcore/build -m -p %s -j %s' %(platform, jobs))
 
 	if platform == "webos":
 		print "============== WEBOS DEPLOYMENT =============="
