@@ -12,7 +12,7 @@ Python script to deploy
 # Quick start
 Place script in your PureQML project root (or use symbol link). Your project must contain the ```.manifest``` file. Run the script:
 ```
-./smart-tv-deployer.py -p TARGET_PLATFORM -j JOBS_COUNT
+./build.py -p TARGET_PLATFORM -j JOBS_COUNT
 ```
 ```TARGET_PLATFORM``` - platform you wont to deploy possible possible values are webos|netcast|tizen|orsay|androidtv
 ```JOBS_COUNT``` - optional flag `j` declares jobs count, to increase speed of the `qmlcore/build` script
@@ -24,13 +24,13 @@ Than you must enable developer mode on your TV for details see [this link](http:
 
 After configuring TV run the script:
 ```
-./smart-tv-deployer.py -p webos -t tvName
+./build.py -p webos -t tvName
 ```
 ```tvName``` - name of TV which you've set in ``` ares-setup-device ```
 ### LG NetCast
 Run the script:
 ```
-./smart-tv-deployer.py -p netcast
+./build.py -p netcast
 ```
 After deploying all files will be archived in zip file in ```build.netcast/<title>_<version>.zip``` where
 
@@ -56,7 +56,7 @@ Now you must figure out your TV name. You can get it from available devices list
 Finally we can build our project:
 
 ```
-./smart-tv-deployer.py -p tizen --tizen-profile <PROFILE_PATH> --tv <TV_NAME>
+./build.py -p tizen --tizen-profile <PROFILE_PATH> --tv <TV_NAME>
 ```
 Where
 * ```PROFILE_PATH``` - is path to the to the tizen profile
@@ -65,7 +65,7 @@ Where
 ### Samsung Orsay
 Run the script:
 ```
-./smart-tv-deployer.py -p orsay
+./build.py -p orsay
 ```
 After deploying all files will be archived in zip file in ```build.orsay/<title>_<version>.zip``` where
 
@@ -76,7 +76,7 @@ To run the app on your SmartTV just unzip archive in USB storage and stick it in
 ### AndroidTV
 To build android projects you need to install [cordova](https://cordova.apache.org/) first. Then run the script:
 ```
-./smart-tv-deployer.py -p androidtv
+./build.py -p androidtv
 ```
 The result apk will be located in path: ```./build.androidtv/<your_app_title>/platforms/android/build/outputs/apk/debug/android-debug.apk``` where
 * ```your_app_title``` - your app title from ```.manifest``` file
