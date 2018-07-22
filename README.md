@@ -14,7 +14,7 @@ Place script in your PureQML project root (or use symbol link). Your project mus
 ```
 ./build.py -p TARGET_PLATFORM -j JOBS_COUNT
 ```
-```TARGET_PLATFORM``` - platform you wont to deploy possible possible values are webos|netcast|tizen|orsay|androidtv
+```TARGET_PLATFORM``` - platform you wont to deploy possible values are webos|netcast|tizen|orsay|androidtv
 ```JOBS_COUNT``` - optional flag `j` declares jobs count, to increase speed of the `qmlcore/build` script
 # Platform specific deployment
 Each platform has some features during deploy
