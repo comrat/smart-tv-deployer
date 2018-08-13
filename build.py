@@ -45,7 +45,7 @@ def deploy_webos(app, version, tv):
 		os.system('$WEBOS_CLI_TV/ares-launch com.%s.app' %(app))
 
 
-def deploy_tizen(app, version, tv, profile):
+def deploy_tizen(app, tv, profile):
 	if tv is None:
 		print "Please set target device name in --tv or -t flag"
 		print "You can see available devices with command 'sdb devices'"
@@ -58,14 +58,17 @@ def deploy_tizen(app, version, tv, profile):
 	if profile is None:
 		print "Please set profile in --tizen-profile or -tp flag"
 		print "To install your app on TV your result .wgt file must be signed by your profile certificate"
-		print "First of all you must generate certificate or add existed with tizen certificate manager"
+		print "First of all you must generate certificate or add existed with tizen certificate manager mycert.p12 for example"
 		print "After that provide path to tizen-studio profiles: tizen cli-config -g profiles.path='/home/username/tizen-workspace/.metadata/.plugins/org.tizen.common.sign/profiles.xml'"
+		print "Then you need to add an security profile: tizen security-profiles add -n MyProfile -a /home/username/tizen-studio-data/keystore/author/mycert.p12 -p 1234"
+		print "There '1234' is yout certificate password"
+		print "If you've done all this steps correctly you can now pass in --tizen-profile or -tp flag your profile name: 'MyProfile' in out example"
 		sys.exit(1)
 
 	tizen_installed = os.system("tizen version")
 	if tizen_installed == 0:
 		os.chdir("./build.tizen")
-		result_wgt = app + "_" + version + ".wgt"
+		result_wgt = app + ".wgt"
 
 		if path.exists(result_wgt):
 			print "Remove previous WGT file..."
@@ -158,7 +161,7 @@ if path.exists(manifest_path):
 		deploy_webos(title, version, tv)
 	elif platform == "tizen":
 		print "============== TIZEN DEPLOYMENT =============="
-		deploy_tizen(title, version, tv, tizen_profile)
+		deploy_tizen(title, tv, tizen_profile)
 	elif platform == "netcast":
 		print "============== NETCAST DEPLOYMENT =============="
 		deploy_netcast(title, version)
