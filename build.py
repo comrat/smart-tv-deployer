@@ -66,12 +66,13 @@ def deploy_tizen(app, version, tv, profile):
 	if tizen_installed == 0:
 		os.chdir("./build.tizen")
 		result_wgt = app + "_" + version + ".wgt"
+
 		if path.exists(result_wgt):
 			print "Remove previous WGT file..."
 			os.system('rm %s' %(result_wgt))
 
 		os.system('tizen package -t wgt -s %s' %(profile))
-		os.system('tizen install -n %s.wgt -t %s' %(result_wgt, tv))
+		os.system('tizen install -n %s -t %s' %(result_wgt, tv))
 		print "If you see 'Failed to install Tizen application.' log up there don's worry, check 'My App' list on target device your app may be installed (see https://stackoverflow.com/a/42966767 for details)"
 	else:
 		print "'tizen' command not defined. If you've installed tizen-studio already export it's 'bin' directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin"
