@@ -49,17 +49,26 @@ After that configure path to tizen-studio profiles:
 
 ```tizen cli-config -g profiles.path='/home/username/tizen-workspace/.metadata/.plugins/org.tizen.common.sign/profiles.xml'```
 
+
 To deploy your app on TV you need to connect to it first via [sdb](https://developer.tizen.org/ko/development/tizen-studio/web-tools/running-and-testing-your-app/sdb?langredirect=1). For example if your TV IP address is ```192.168.1.1``` the considered command will be ```sdb connect 192.168.1.1:26101```
 
 Now you must figure out your TV name. You can get it from available devices list via command:```sdb devices```
 
+Then you need to add an security profile:
+```
+tizen security-profiles add -n MyProfile -a /home/username/tizen-studio-data/keystore/author/mycert.p12 -p 1234"
+```
+
+There ```1234``` is your certificate password"
+If you've done all this steps correctly you can now pass in ```--tizen-profile``` or ```-tp``` flag your profile name: ```MyProfile``` in our example
+
 Finally we can build our project:
 
 ```
-./build.py -p tizen --tizen-profile <PROFILE_PATH> --tv <TV_NAME>
+./build.py -p tizen --tizen-profile <PROFILE> --tv <TV_NAME>
 ```
 Where
-* ```PROFILE_PATH``` - is path to the to the tizen profile
+* ```PROFILE``` - is profile name like ```MyProfile``` in example below
 * ```TV_NAME``` - TV name from ```sdb devices```
 
 ### Samsung Orsay

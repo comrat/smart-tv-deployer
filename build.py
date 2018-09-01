@@ -61,8 +61,8 @@ def deploy_tizen(app, tv, profile):
 		print "First of all you must generate certificate or add existed with tizen certificate manager mycert.p12 for example"
 		print "After that provide path to tizen-studio profiles: tizen cli-config -g profiles.path='/home/username/tizen-workspace/.metadata/.plugins/org.tizen.common.sign/profiles.xml'"
 		print "Then you need to add an security profile: tizen security-profiles add -n MyProfile -a /home/username/tizen-studio-data/keystore/author/mycert.p12 -p 1234"
-		print "There '1234' is yout certificate password"
-		print "If you've done all this steps correctly you can now pass in --tizen-profile or -tp flag your profile name: 'MyProfile' in out example"
+		print "There '1234' is your certificate password"
+		print "If you've done all this steps correctly you can now pass in --tizen-profile or -tp flag your profile name: 'MyProfile' in our example"
 		sys.exit(1)
 
 	tizen_installed = os.system("tizen version")
