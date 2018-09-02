@@ -35,14 +35,19 @@ def parse_manifest(manifest):
 	return title, version
 
 
-def deploy_webos(app, version, tv):
+def deploy_webos(app, version, tv, debug):
 	os.system('$WEBOS_CLI_TV/ares-package build.webos')
 	if tv is not None:
 		os.system('$WEBOS_CLI_TV/ares-install com.%s.app_%s_all.ipk -d %s' %(app, version, tv))
 		os.system('$WEBOS_CLI_TV/ares-launch com.%s.app -d %s' %(app, tv))
+		if debug is True:
+			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.app -d %s' %(app, tv))
 	else:
 		os.system('$WEBOS_CLI_TV/ares-install com.%s.app_%s_all.ipk' %(app, version))
 		os.system('$WEBOS_CLI_TV/ares-launch com.%s.app' %(app))
+		if debug is True:
+			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.app' %(app))
+
 
 
 def deploy_tizen(app, tv, profile):
@@ -137,6 +142,7 @@ parser.add_argument('--platform', '-p', help='target platform: webos|netcast|tiz
 parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', dest='tizen_profile')
 parser.add_argument('--tv', '-t', help='TV name', dest='tv')
 parser.add_argument('--release', '-r', help='build release apk for android platform', dest='release', default=False)
+parser.add_argument('--debug', '-d', help='start debugging afer building', dest='debug', default=False)
 args = parser.parse_args()
 
 manifest_path = '.manifest'
@@ -144,6 +150,7 @@ tizen_profile = args.tizen_profile
 platform = args.platform
 tv = args.tv
 release = args.release
+debug = args.debug
 jobs = args.jobs
 
 if platform is None:
@@ -158,7 +165,7 @@ if path.exists(manifest_path):
 
 	if platform == "webos":
 		print "============== WEBOS DEPLOYMENT =============="
-		deploy_webos(title, version, tv)
+		deploy_webos(title, version, tv, debug)
 	elif platform == "tizen":
 		print "============== TIZEN DEPLOYMENT =============="
 		deploy_tizen(title, tv, tizen_profile)
