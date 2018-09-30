@@ -35,22 +35,22 @@ def parse_manifest(manifest):
 	return title, version
 
 
-def deploy_webos(app, version, tv, debug):
-	os.system('$WEBOS_CLI_TV/ares-package build.webos')
+def deploy_webos(title, version, tv, debug, app):
+	os.system('$WEBOS_CLI_TV/ares-package build.webos%s' %(app))
 	if tv is not None:
-		os.system('$WEBOS_CLI_TV/ares-install com.%s.app_%s_all.ipk -d %s' %(app, version, tv))
-		os.system('$WEBOS_CLI_TV/ares-launch com.%s.app -d %s' %(app, tv))
+		os.system('$WEBOS_CLI_TV/ares-install com.%s.title_%s_all.ipk -d %s' %(title, version, tv))
+		os.system('$WEBOS_CLI_TV/ares-launch com.%s.title -d %s' %(title, tv))
 		if debug is True:
-			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.app -d %s' %(app, tv))
+			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.title -d %s' %(title, tv))
 	else:
-		os.system('$WEBOS_CLI_TV/ares-install com.%s.app_%s_all.ipk' %(app, version))
-		os.system('$WEBOS_CLI_TV/ares-launch com.%s.app' %(app))
+		os.system('$WEBOS_CLI_TV/ares-install com.%s.title_%s_all.ipk' %(title, version))
+		os.system('$WEBOS_CLI_TV/ares-launch com.%s.title' %(title))
 		if debug is True:
-			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.app' %(app))
+			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.title' %(title))
 
 
 
-def deploy_tizen(app, tv, profile):
+def deploy_tizen(title, tv, profile, app):
 	if tv is None:
 		print "Please set target device name in --tv or -t flag"
 		print "You can see available devices with command 'sdb devices'"
@@ -72,8 +72,8 @@ def deploy_tizen(app, tv, profile):
 
 	tizen_installed = os.system("tizen version")
 	if tizen_installed == 0:
-		os.chdir("./build.tizen")
-		result_wgt = app + ".wgt"
+		os.chdir("./build.tizen" + app)
+		result_wgt = title + ".wgt"
 
 		if path.exists(result_wgt):
 			print "Remove previous WGT file..."
@@ -86,9 +86,9 @@ def deploy_tizen(app, tv, profile):
 		print "'tizen' command not defined. If you've installed tizen-studio already export it's 'bin' directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin"
 
 
-def zip_dir(app, version, platform):
-	result_zip = app + "_" + version + ".zip"
-	platform_folder = "build." + platform
+def zip_dir(title, version, platform, app):
+	result_zip = title + "_" + version + ".zip"
+	platform_folder = "build." + platform + app
 	if path.exists(platform_folder):
 		os.chdir(platform_folder)
 		if path.exists(result_zip):
@@ -99,41 +99,41 @@ def zip_dir(app, version, platform):
 		return False
 
 
-def deploy_orsay(app, version):
-	result_zip = app + "_" + version + ".zip"
-	if zip_dir(app, version, "orsay"):
+def deploy_orsay(title, version, app):
+	result_zip = title + "_" + version + ".zip"
+	if zip_dir(title, version, "orsay", app):
 		print "Done"
 		print "Now you can upload zip file on your server or unzip it on USB and insert it in your samsung smart TV"
 	else:
 		print "ERROR: Failed to deploy orsay"
 
 
-def deploy_netcast(app, version):
-	result_zip = app + "_" + version + ".zip"
-	if zip_dir(app, version, "netcast"):
+def deploy_netcast(title, version, app):
+	result_zip = title + "_" + version + ".zip"
+	if zip_dir(title, version, "netcast", app):
 		print "Done"
 		print "Now you must add DRM subscription to your app, upload build.netcast/" + result_zip + " here 'http://developer.lge.com/apptest/retrieveApptestOSList.dev'"
 	else:
 		print "ERROR: Failed to deploy netcast"
 
 
-def deploy_android(platform, app, release):
-	platform_folder = "./build." + platform
+def deploy_android(platform, title, release, app):
+	platform_folder = "./build." + platform + app
 	os.system('cd %s' %(platform_folder))
 	os.chdir(platform_folder)
 
-	if path.exists(app):
+	if path.exists(title):
 		print "Clean..."
-		os.system('rm -rf %s' %(app))
+		os.system('rm -rf %s' %(title))
 
 	print "Run build.py..."
 	if release:
-		os.system('./build.py --app %s --title %s --release' %(app, app))
+		os.system('./build.py --app %s --title %s --release' %(title, title))
 	else:
-		os.system('./build.py --app %s --title %s' %(app, app))
+		os.system('./build.py --app %s --title %s' %(title, title))
 
 	print "Install via adb..."
-	os.system('adb install -r ./%s/platforms/android/build/outputs/apk/debug/android-debug.apk' %(app))
+	os.system('adb install -r ./%s/platforms/android/build/outputs/apk/debug/android-debug.apk' %(title))
 
 
 parser = argparse.ArgumentParser('smart-tv-deploy script')
@@ -144,6 +144,7 @@ parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', 
 parser.add_argument('--tv', '-t', help='TV name', dest='tv')
 parser.add_argument('--release', '-r', help='build release apk for android platform', dest='release', default=False)
 parser.add_argument('--debug', '-d', help='start debugging afer building', dest='debug', default=False)
+parser.add_argument('--app', '-a', help='target application if there is more than one apps in project', dest='app')
 args = parser.parse_args()
 
 manifest_path = '.manifest'
@@ -154,6 +155,7 @@ release = args.release
 debug = args.debug
 jobs = args.jobs
 minify = args.minify
+app = args.app
 
 if platform is None:
 	print "Provide platform name: ./smart-tv-deployer.py -p <PLATFORM_NAME>"
@@ -161,28 +163,31 @@ if platform is None:
 
 if path.exists(manifest_path):
 	title, version = parse_manifest(manifest_path)
+	if args.app is not None:
+		title = args.app
+	app_dir = "/" + args.app if args.app is not None else ""
 	print "Manifest parsed, title:", title, "version", version
 	print "Build project..."
 	os.system('./qmlcore/build %s -p %s -j %s' %("-m" if minify else "", platform, jobs))
 
 	if platform == "webos":
 		print "============== WEBOS DEPLOYMENT =============="
-		deploy_webos(title, version, tv, debug)
+		deploy_webos(title, version, tv, debug, app_dir)
 	elif platform == "tizen":
 		print "============== TIZEN DEPLOYMENT =============="
-		deploy_tizen(title, tv, tizen_profile)
+		deploy_tizen(title, tv, tizen_profile, app_dir)
 	elif platform == "netcast":
 		print "============== NETCAST DEPLOYMENT =============="
-		deploy_netcast(title, version)
+		deploy_netcast(title, version, app_dir)
 	elif platform == "orsay":
 		print "============== ORSAY DEPLOYMENT =============="
-		deploy_orsay(title, version)
+		deploy_orsay(title, version, app_dir)
 	elif platform == "androidtv":
 		print "============== ANDROIDTV DEPLOYMENT =============="
-		deploy_android("androidtv", title, release)
+		deploy_android("androidtv", title, release, app_dir)
 	elif platform == "android":
 		print "============== ANDROID DEPLOYMENT =============="
-		deploy_android("android", title, release)
+		deploy_android("android", title, release, app_dir)
 	else:
 		print "Unknown platform:", platform
 else:
