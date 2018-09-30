@@ -12,10 +12,11 @@ Python script to deploy
 # Quick start
 Place script in your PureQML project root (or use symbol link). Your project must contain the ```.manifest``` file. Run the script:
 ```
-./build.py -p TARGET_PLATFORM -j JOBS_COUNT
+./build.py -p TARGET_PLATFORM -j JOBS_COUNT -m
 ```
 ```TARGET_PLATFORM``` - platform you wont to deploy possible values are webos|netcast|tizen|orsay|androidtv
 ```JOBS_COUNT``` - optional flag `j` declares jobs count, to increase speed of the `qmlcore/build` script
+```-m``` - flag to minify build
 # Platform specific deployment
 Each platform has some features during deploy
 ### LG WebOS
