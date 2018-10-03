@@ -38,16 +38,15 @@ def parse_manifest(manifest):
 def deploy_webos(title, version, tv, debug, app):
 	os.system('$WEBOS_CLI_TV/ares-package build.webos%s' %(app))
 	if tv is not None:
-		os.system('$WEBOS_CLI_TV/ares-install com.%s.title_%s_all.ipk -d %s' %(title, version, tv))
-		os.system('$WEBOS_CLI_TV/ares-launch com.%s.title -d %s' %(title, tv))
+		os.system('$WEBOS_CLI_TV/ares-install com.%s.app_%s_all.ipk -d %s' %(title, version, tv))
+		os.system('$WEBOS_CLI_TV/ares-launch com.%s.app -d %s' %(title, tv))
 		if debug is True:
-			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.title -d %s' %(title, tv))
+			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.app -d %s' %(title, tv))
 	else:
-		os.system('$WEBOS_CLI_TV/ares-install com.%s.title_%s_all.ipk' %(title, version))
-		os.system('$WEBOS_CLI_TV/ares-launch com.%s.title' %(title))
+		os.system('$WEBOS_CLI_TV/ares-install com.%s.app_%s_all.ipk' %(title, version))
+		os.system('$WEBOS_CLI_TV/ares-launch com.%s.app' %(title))
 		if debug is True:
-			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.title' %(title))
-
+			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.app' %(title))
 
 
 def deploy_tizen(title, tv, profile, app):
