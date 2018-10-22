@@ -126,7 +126,7 @@ def deploy_android(platform, title, release, app):
 		os.system('rm -rf %s' %(title))
 
 	print "Run build.py..."
-	app_folder = app[1:] if app is not None else title
+	app_folder = title if not app else app[1:]
 	if release:
 		os.system('./build.py --app %s --title %s --release' %(app_folder, app_folder))
 	else:
