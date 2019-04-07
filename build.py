@@ -88,7 +88,6 @@ def deploy_tizen(title, tv, profile, app):
 def zip_dir(title, version, platform, app, withFolder):
 	result_zip = title + "_" + version + ".zip"
 	platform_folder = "build." + platform + app
-	print "PLAT", platform_folder, "app", app
 	if path.exists(platform_folder):
 		if not withFolder:
 			os.chdir(platform_folder)
