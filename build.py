@@ -85,14 +85,20 @@ def deploy_tizen(title, tv, profile, app):
 		print "'tizen' command not defined. If you've installed tizen-studio already export it's 'bin' directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin"
 
 
-def zip_dir(title, version, platform, app):
+def zip_dir(title, version, platform, app, withFolder):
 	result_zip = title + "_" + version + ".zip"
 	platform_folder = "build." + platform + app
+	print "PLAT", platform_folder, "app", app
 	if path.exists(platform_folder):
-		os.chdir(platform_folder)
+		if not withFolder:
+			os.chdir(platform_folder)
 		if path.exists(result_zip):
 			os.system('rm %s' %(result_zip))
-		os.system('zip -r %s *' %(result_zip))
+
+		if withFolder:
+			os.system('zip -r %s %s' %(result_zip, platform_folder))
+		else:
+			os.system('zip -r %s *' %(result_zip))
 		return True
 	else:
 		return False
@@ -100,7 +106,7 @@ def zip_dir(title, version, platform, app):
 
 def deploy_orsay(title, version, app):
 	result_zip = title + "_" + version + ".zip"
-	if zip_dir(title, version, "orsay", app):
+	if zip_dir(title, version, "orsay", app, True):
 		print "Done"
 		print "Now you can upload zip file on your server or unzip it on USB and insert it in your samsung smart TV"
 	else:
@@ -109,7 +115,7 @@ def deploy_orsay(title, version, app):
 
 def deploy_netcast(title, version, app):
 	result_zip = title + "_" + version + ".zip"
-	if zip_dir(title, version, "netcast", app):
+	if zip_dir(title, version, "netcast", app, False):
 		print "Done"
 		print "Now you must add DRM subscription to your app, upload build.netcast/" + result_zip + " here 'http://developer.lge.com/apptest/retrieveApptestOSList.dev'"
 	else:
