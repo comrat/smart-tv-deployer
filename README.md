@@ -77,7 +77,7 @@ Run the script:
 ```
 ./build.py -p orsay
 ```
-After deploying all files will be archived in zip file in ```build.orsay/<title>_<version>.zip``` where
+After deploying all files will be archived in zip file in ```<title>_<version>.zip``` where
 
 * ```title``` - is app title from ```.manifest``` if it wasn't declared it will be called ```app``` by default
 * ```version``` - app version from the manifest or ```1.0.0``` if it wasn't defined
