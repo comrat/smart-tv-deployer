@@ -1,4 +1,6 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
+
+from __future__ import print_function
 
 import sys
 import json
@@ -51,22 +53,22 @@ def deploy_webos(title, version, tv, debug, app):
 
 def deploy_tizen(title, tv, profile, app):
 	if tv is None:
-		print "Please set target device name in --tv or -t flag"
-		print "You can see available devices with command 'sdb devices'"
-		print "What's sdb? Smart Development Bridge - CLI tool used by Tizen (see https://developer.tizen.org/ko/development/tizen-studio/web-tools/running-and-testing-your-app/sdb?langredirect=1)"
-		print "You can add symlink for sdb: sudo ln -s /home/username/tizen-studio/tools/sdb /usr/bin/sdb"
-		print "Don't forget to connect to desired device! For example this command connect to TV with 192.168.1.1 IP address: sdb connect 192.168.1.1:26101"
-		print "P.S. You need to type your IP address in developer mode on target TV"
+		print("Please set target device name in --tv or -t flag")
+		print("You can see available devices with command 'sdb devices'")
+		print("What's sdb? Smart Development Bridge - CLI tool used by Tizen (see https://developer.tizen.org/ko/development/tizen-studio/web-tools/running-and-testing-your-app/sdb?langredirect=1)")
+		print("You can add symlink for sdb: sudo ln -s /home/username/tizen-studio/tools/sdb /usr/bin/sdb")
+		print("Don't forget to connect to desired device! For example this command connect to TV with 192.168.1.1 IP address: sdb connect 192.168.1.1:26101")
+		print("P.S. You need to type your IP address in developer mode on target TV")
 		sys.exit(1)
 
 	if profile is None:
-		print "Please set profile in --tizen-profile or -tp flag"
-		print "To install your app on TV your result .wgt file must be signed by your profile certificate"
-		print "First of all you must generate certificate or add existed with tizen certificate manager mycert.p12 for example"
-		print "After that provide path to tizen-studio profiles: tizen cli-config -g profiles.path='/home/username/tizen-workspace/.metadata/.plugins/org.tizen.common.sign/profiles.xml'"
-		print "Then you need to add an security profile: tizen security-profiles add -n MyProfile -a /home/username/tizen-studio-data/keystore/author/mycert.p12 -p 1234"
-		print "There '1234' is your certificate password"
-		print "If you've done all this steps correctly you can now pass in --tizen-profile or -tp flag your profile name: 'MyProfile' in our example"
+		print("Please set profile in --tizen-profile or -tp flag")
+		print("To install your app on TV your result .wgt file must be signed by your profile certificate")
+		print("First of all you must generate certificate or add existed with tizen certificate manager mycert.p12 for example")
+		print("After that provide path to tizen-studio profiles: tizen cli-config -g profiles.path='/home/username/tizen-workspace/.metadata/.plugins/org.tizen.common.sign/profiles.xml'")
+		print("Then you need to add an security profile: tizen security-profiles add -n MyProfile -a /home/username/tizen-studio-data/keystore/author/mycert.p12 -p 1234")
+		print("There '1234' is your certificate password")
+		print("If you've done all this steps correctly you can now pass in --tizen-profile or -tp flag your profile name: 'MyProfile' in our example")
 		sys.exit(1)
 
 	tizen_installed = os.system("tizen version")
@@ -75,14 +77,14 @@ def deploy_tizen(title, tv, profile, app):
 		result_wgt = title + ".wgt"
 
 		if path.exists(result_wgt):
-			print "Remove previous WGT file..."
+			print("Remove previous WGT file...")
 			os.system('rm %s' %(result_wgt))
 
 		os.system('tizen package -t wgt -s %s' %(profile))
 		os.system('tizen install -n %s -t %s' %(result_wgt, tv))
-		print "If you see 'Failed to install Tizen application.' log up there don's worry, check 'My App' list on target device your app may be installed (see https://stackoverflow.com/a/42966767 for details)"
+		print("If you see 'Failed to install Tizen application.' log up there don's worry, check 'My App' list on target device your app may be installed (see https://stackoverflow.com/a/42966767 for details)")
 	else:
-		print "'tizen' command not defined. If you've installed tizen-studio already export it's 'bin' directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin"
+		print("'tizen' command not defined. If you've installed tizen-studio already export it's 'bin' directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin")
 
 
 def zip_dir(title, version, platform, app, withFolder):
@@ -106,19 +108,19 @@ def zip_dir(title, version, platform, app, withFolder):
 def deploy_orsay(title, version, app):
 	result_zip = title + "_" + version + ".zip"
 	if zip_dir(title, version, "orsay", app, True):
-		print "Done"
-		print "Now you can upload zip file on your server or unzip it on USB and insert it in your samsung smart TV"
+		print("Done")
+		print("Now you can upload zip file on your server or unzip it on USB and insert it in your samsung smart TV")
 	else:
-		print "ERROR: Failed to deploy orsay"
+		print("ERROR: Failed to deploy orsay")
 
 
 def deploy_netcast(title, version, app):
 	result_zip = title + "_" + version + ".zip"
 	if zip_dir(title, version, "netcast", app, False):
-		print "Done"
-		print "Now you must add DRM subscription to your app, upload build.netcast/" + result_zip + " here 'http://developer.lge.com/apptest/retrieveApptestOSList.dev'"
+		print("Done")
+		print("Now you must add DRM subscription to your app, upload build.netcast/" + result_zip + " here 'http://developer.lge.com/apptest/retrieveApptestOSList.dev'")
 	else:
-		print "ERROR: Failed to deploy netcast"
+		print("ERROR: Failed to deploy netcast")
 
 
 def deploy_android(platform, title, release, app):
@@ -127,17 +129,17 @@ def deploy_android(platform, title, release, app):
 	os.chdir(platform_folder)
 
 	if path.exists(title):
-		print "Clean..."
+		print("Clean...")
 		os.system('rm -rf %s' %(title))
 
-	print "Run build.py..."
+	print("Run build.py...")
 	app_folder = title if not app else app[1:]
 	if release:
 		os.system('./build.py --app %s --title %s --release' %(app_folder, app_folder))
 	else:
 		os.system('./build.py --app %s --title %s' %(app_folder, app_folder))
 
-	print "Install via adb..."
+	print("Install via adb...")
 	os.system('adb install -r ./%s/platforms/android/build/outputs/apk/debug/android-debug.apk' %(title))
 
 
@@ -165,7 +167,7 @@ app = args.app
 baseurl = args.baseurl
 
 if platform is None:
-	print "Provide platform name: ./smart-tv-deployer.py -p <PLATFORM_NAME>"
+	print("Provide platform name: ./smart-tv-deployer.py -p <PLATFORM_NAME>")
 	sys.exit(1)
 
 if path.exists(manifest_path):
@@ -173,29 +175,29 @@ if path.exists(manifest_path):
 	if args.app is not None:
 		title = args.app
 	app_dir = "/" + args.app if args.app is not None else ""
-	print "Manifest parsed, title:", title, "version", version
-	print "Build project..."
+	print("Manifest parsed, title:", title, "version", version)
+	print("Build project...")
 	os.system('./qmlcore/build %s -p %s -j %s %s' %("-m" if minify else "", platform, jobs, "-s baseurl " + baseurl if baseurl is not None else ""))
 
 	if platform == "webos":
-		print "============== WEBOS DEPLOYMENT =============="
+		print("============== WEBOS DEPLOYMENT ==============")
 		deploy_webos(title, version, tv, debug, app_dir)
 	elif platform == "tizen":
-		print "============== TIZEN DEPLOYMENT =============="
+		print("============== TIZEN DEPLOYMENT ==============")
 		deploy_tizen(title, tv, tizen_profile, app_dir)
 	elif platform == "netcast":
-		print "============== NETCAST DEPLOYMENT =============="
+		print("============== NETCAST DEPLOYMENT ==============")
 		deploy_netcast(title, version, app_dir)
 	elif platform == "orsay":
-		print "============== ORSAY DEPLOYMENT =============="
+		print("============== ORSAY DEPLOYMENT ==============")
 		deploy_orsay(title, version, app_dir)
 	elif platform == "androidtv":
-		print "============== ANDROIDTV DEPLOYMENT =============="
+		print("============== ANDROIDTV DEPLOYMENT ==============")
 		deploy_android("androidtv", title, release, app_dir)
 	elif platform == "android":
-		print "============== ANDROID DEPLOYMENT =============="
+		print("============== ANDROID DEPLOYMENT ==============")
 		deploy_android("android", title, release, app_dir)
 	else:
-		print "Unknown platform:", platform
+		print("Unknown platform:", platform)
 else:
-	print ".manifest file not found"
+	print(".manifest file not found")
