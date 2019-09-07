@@ -171,17 +171,18 @@ if platform is None:
 	sys.exit(1)
 
 if path.exists(manifest_path):
-	title, version = parse_manifest(manifest_path)
+	manifest_title, version = parse_manifest(manifest_path)
+	title = manifest_title
 	if args.app is not None:
 		title = args.app
 	app_dir = "/" + args.app if args.app is not None else ""
 	print("Manifest parsed, title:", title, "version", version)
 	print("Build project...")
-	os.system('./qmlcore/build %s -p %s -j %s %s' %("-m" if minify else "", platform, jobs, "-s baseurl " + baseurl if baseurl is not None else ""))
+	os.system('./qmlcore/build %s -p %s -j %s %s %s' %("-m" if minify else "", platform, jobs, "-s baseurl " + baseurl if baseurl is not None else "", app if app is not None else ""))
 
 	if platform == "webos":
 		print("============== WEBOS DEPLOYMENT ==============")
-		deploy_webos(title, version, tv, debug, app_dir)
+		deploy_webos(manifest_title, version, tv, debug, app_dir)
 	elif platform == "tizen":
 		print("============== TIZEN DEPLOYMENT ==============")
 		deploy_tizen(title, tv, tizen_profile, app_dir)
