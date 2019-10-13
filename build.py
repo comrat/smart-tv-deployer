@@ -123,6 +123,15 @@ def deploy_netcast(title, version, app):
 		print("ERROR: Failed to deploy netcast")
 
 
+def deploy_extension(title, version, app):
+	result_zip = title + "_" + version + ".zip"
+	if zip_dir(title, version, "webextension", app, False):
+		print("Done")
+		print("Now you can upload upload build.webextension/" + result_zip + " in your chrome or firefox browser")
+	else:
+		print("ERROR: Failed to deploy web extension")
+
+
 def deploy_android(platform, title, release, app):
 	platform_folder = "./build." + platform + app
 	os.system('cd %s' %(platform_folder))
@@ -198,6 +207,9 @@ if path.exists(manifest_path):
 	elif platform == "android":
 		print("============== ANDROID DEPLOYMENT ==============")
 		deploy_android("android", title, release, app_dir)
+	elif platform == "webextension":
+		print("============== WEB EXTENSION DEPLOYMENT ==============")
+		deploy_extension(title, version, app_dir)
 	else:
 		print("Unknown platform:", platform)
 else:
