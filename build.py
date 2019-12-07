@@ -132,6 +132,13 @@ def deploy_extension(title, version, app):
 		print("ERROR: Failed to deploy web extension")
 
 
+def deploy_electron(app):
+	platform_folder = "./build.electron" + app
+	os.system('cd %s' %(platform_folder))
+	os.system('npm install')
+	os.system('npm start')
+
+
 def deploy_android(platform, title, release, app):
 	platform_folder = "./build." + platform + app
 	os.system('cd %s' %(platform_folder))
@@ -210,6 +217,9 @@ if path.exists(manifest_path):
 	elif platform == "webextension":
 		print("============== WEB EXTENSION DEPLOYMENT ==============")
 		deploy_extension(title, version, app_dir)
+	elif platform == "electronjs":
+		print("============== ELECTRON.JS DEPLOYMENT ==============")
+		deploy_electron(app_dir)
 	else:
 		print("Unknown platform:", platform)
 else:
