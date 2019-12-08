@@ -83,6 +83,7 @@ After deploying all files will be archived in zip file in ```<title>_<version>.z
 * ```version``` - app version from the manifest or ```1.0.0``` if it wasn't defined
 
 To run the app on your SmartTV just unzip archive in USB storage and stick it in your TV and open your app in 'My Apps'
+
 ### AndroidTV
 To build android projects you need to install [cordova](https://cordova.apache.org/) first. Then run the script:
 ```
@@ -90,3 +91,10 @@ To build android projects you need to install [cordova](https://cordova.apache.o
 ```
 The result apk will be located in path: ```./build.androidtv/<your_app_title>/platforms/android/build/outputs/apk/debug/android-debug.apk``` where
 * ```your_app_title``` - your app title from ```.manifest``` file
+
+### Electron.JS
+To build electron.js project you need ```npm``` installed and run this script with this flags:
+```
+./build.py -p electronjs
+```
+The result app will be in ```./build.electronjs``` directory and it will be builded and run with ```npm```.
