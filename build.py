@@ -132,11 +132,18 @@ def deploy_extension(title, version, app):
 		print("ERROR: Failed to deploy web extension")
 
 
-def deploy_electron(app):
-	platform_folder = "./build.electron" + app
-	os.system('cd %s' %(platform_folder))
-	os.system('npm install')
-	os.system('npm start')
+def deploy_electron(app, electronjs_os):
+	platform_folder = "./build.electronjs" + app
+	if electronjs_os == "windows":
+		print("Make windows build...")
+		os.system('rm -rf ./electron_win')
+		os.system('mkdir ./electron_win')
+		os.system('cp -r ./smart-tv-deployer/dist/electronjs/windows/* ./electron_win/.')
+		os.system('cp -r %s ./electron_win/resources/app' %(platform_folder))
+	else:
+		os.system('cd %s' %(platform_folder))
+		os.system('npm install')
+		os.system('npm start')
 
 
 def deploy_android(platform, title, release, app):
@@ -163,6 +170,7 @@ parser = argparse.ArgumentParser('smart-tv-deploy script')
 parser.add_argument('--minify', '-m', action='store_true', help='force minify step', dest='minify', default=False)
 parser.add_argument('--jobs', '-j', help='run N jobs in parallel', dest='jobs', default=1, nargs='?')
 parser.add_argument('--platform', '-p', help='target platform: webos|netcast|tizen|orsay|androidtv', dest='platform')
+parser.add_argument('--os', '-os', help='target electronjs OS', dest='electronjs_os')
 parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', dest='tizen_profile')
 parser.add_argument('--tv', '-t', help='TV name', dest='tv')
 parser.add_argument('--release', '-r', help='build release apk for android platform', dest='release', default=False)
@@ -173,6 +181,7 @@ args = parser.parse_args()
 
 manifest_path = '.manifest'
 tizen_profile = args.tizen_profile
+electronjs_os = args.electronjs_os
 platform = args.platform
 tv = args.tv
 release = args.release
@@ -219,7 +228,7 @@ if path.exists(manifest_path):
 		deploy_extension(title, version, app_dir)
 	elif platform == "electronjs":
 		print("============== ELECTRON.JS DEPLOYMENT ==============")
-		deploy_electron(app_dir)
+		deploy_electron(app_dir, electronjs_os)
 	else:
 		print("Unknown platform:", platform)
 else:
