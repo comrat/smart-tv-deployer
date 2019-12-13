@@ -144,7 +144,7 @@ def deploy_electron(app, electronjs_os):
 		print("Make MacOS build...")
 		os.system('rm -rf ./electron_macos')
 		os.system('mkdir ./electron_macos')
-		os.system('cp -r ./smart-tv-deployer/dist/electronjs/macos/* ./electron_macos/.')
+		os.system('unzip ./smart-tv-deployer/dist/electronjs/macos/Electron.app.zip -d ./electron_macos/.')
 		os.system('cp -r %s ./electron_macos/Electron.app/Contents/Resources/app' %(platform_folder))
 	else:
 		os.system('cd %s' %(platform_folder))
