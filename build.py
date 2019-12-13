@@ -140,6 +140,12 @@ def deploy_electron(app, electronjs_os):
 		os.system('mkdir ./electron_win')
 		os.system('cp -r ./smart-tv-deployer/dist/electronjs/windows/* ./electron_win/.')
 		os.system('cp -r %s ./electron_win/resources/app' %(platform_folder))
+	if electronjs_os == "macos":
+		print("Make MacOS build...")
+		os.system('rm -rf ./electron_macos')
+		os.system('mkdir ./electron_macos')
+		os.system('cp -r ./smart-tv-deployer/dist/electronjs/macos/* ./electron_macos/.')
+		os.system('cp -r %s ./electron_macos/Electron.app/Contents/Resources/app' %(platform_folder))
 	else:
 		os.system('cd %s' %(platform_folder))
 		os.system('npm install')
