@@ -98,3 +98,11 @@ To build electron.js project you need ```npm``` installed and run this script wi
 ./build.py -p electronjs
 ```
 The result app will be in ```./build.electronjs``` directory and it will be builded and run with ```npm```.
+To build app for target OS (Linux, MacOS or Windows) follow correspnded steps below:
+
+##### 1. Windows
+To build windows runnable exe file run command with this parameters:
+```
+./build.py -p electronjs -os windows
+```
+The result `electron_win` app directory will be created to run result app call `app.exe` there
