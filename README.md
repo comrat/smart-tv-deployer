@@ -106,3 +106,10 @@ To build windows runnable exe file run command with this parameters:
 ./build.py -p electronjs -os windows
 ```
 The result `electron_win` app directory will be created to run result app call `app.exe` there
+
+##### 2. MacOS
+To create MacOS executable file run this command:
+```
+./build.py -p electronjs -os macos
+```
+The result `electron_macos` app directory will be created. Executable file location is `electron_macos/Electron.app/Contents/MacOS/Electron`
