@@ -174,7 +174,6 @@ def deploy_android(platform, title, release, app):
 
 def deploy_ios(title, app):
 	platform_folder = "./build.ios" + app
-	print("PLAT %s" %(platform_folder))
 	os.system('cd %s' %(platform_folder))
 	os.chdir(platform_folder)
 
