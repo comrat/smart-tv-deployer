@@ -172,6 +172,21 @@ def deploy_android(platform, title, release, app):
 	os.system('adb install -r ./%s/platforms/android/build/outputs/apk/debug/android-debug.apk' %(title))
 
 
+def deploy_ios(title, app):
+	platform_folder = "./build.ios" + app
+	print("PLAT %s" %(platform_folder))
+	os.system('cd %s' %(platform_folder))
+	os.chdir(platform_folder)
+
+	if path.exists(title):
+		print("Clean...")
+		os.system('rm -rf %s' %(title))
+
+	print("Run build.py...")
+	app_folder = title if not app else app[1:]
+	os.system('./build.py --app %s --title %s' %(app_folder, app_folder))
+
+
 parser = argparse.ArgumentParser('smart-tv-deploy script')
 parser.add_argument('--minify', '-m', action='store_true', help='force minify step', dest='minify', default=False)
 parser.add_argument('--jobs', '-j', help='run N jobs in parallel', dest='jobs', default=1, nargs='?')
@@ -229,6 +244,9 @@ if path.exists(manifest_path):
 	elif platform == "android":
 		print("============== ANDROID DEPLOYMENT ==============")
 		deploy_android("android", title, release, app_dir)
+	elif platform == "ios":
+		print("============== iOS DEPLOYMENT ==============")
+		deploy_ios(title, app_dir)
 	elif platform == "webextension":
 		print("============== WEB EXTENSION DEPLOYMENT ==============")
 		deploy_extension(title, version, app_dir)
