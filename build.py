@@ -147,7 +147,7 @@ def deploy_electron(app, electronjs_os):
 		os.system('unzip ./smart-tv-deployer/dist/electronjs/macos/Electron.app.zip -d ./electron_macos/.')
 		os.system('cp -r %s ./electron_macos/Electron.app/Contents/Resources/app' %(platform_folder))
 	else:
-		os.system('cd %s' %(platform_folder))
+		os.chdir(platform_folder)
 		os.system('npm install')
 		os.system('npm start')
 
