@@ -92,6 +92,12 @@ To build android projects you need to install [cordova](https://cordova.apache.o
 The result apk will be located in path: ```./build.androidtv/<your_app_title>/platforms/android/build/outputs/apk/debug/android-debug.apk``` where
 * ```your_app_title``` - your app title from ```.manifest``` file
 
+### iOS
+To build iOS projects you need to install [cordova](https://cordova.apache.org/) first. Then run the script:
+```
+./build.py -p ios
+```
+
 ### Electron.JS
 To build electron.js project you need ```npm``` installed and run this script with this flags:
 ```
