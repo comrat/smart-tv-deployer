@@ -78,7 +78,7 @@ def deploy_tizen(title, tv, profile, app):
 
 		if path.exists(result_wgt):
 			print("Remove previous WGT file...")
-			os.system('rm %s' %(result_wgt))
+			os.remove(result_wgt)
 
 		os.system('tizen package -t wgt -s %s' %(profile))
 		os.system('tizen install -n %s -t %s' %(result_wgt, tv))
@@ -94,7 +94,7 @@ def zip_dir(title, version, platform, app, withFolder):
 		if not withFolder:
 			os.chdir(platform_folder)
 		if path.exists(result_zip):
-			os.system('rm %s' %(result_zip))
+			os.remove(result_zip)
 
 		if withFolder:
 			os.system('zip -r %s %s' %(result_zip, platform_folder))
@@ -136,13 +136,13 @@ def deploy_electron(app, electronjs_os):
 	platform_folder = "./build.electronjs" + app
 	if electronjs_os == "windows":
 		print("Make windows build...")
-		os.system('rm -rf ./electron_win')
+		os.rmdir('./electron_win')
 		os.system('mkdir ./electron_win')
 		os.system('cp -r ./smart-tv-deployer/dist/electronjs/windows/* ./electron_win/.')
 		os.system('cp -r %s ./electron_win/resources/app' %(platform_folder))
 	if electronjs_os == "macos":
 		print("Make MacOS build...")
-		os.system('rm -rf ./electron_macos')
+		os.rmdir('./electron_macos')
 		os.system('mkdir ./electron_macos')
 		os.system('unzip ./smart-tv-deployer/dist/electronjs/macos/Electron.app.zip -d ./electron_macos/.')
 		os.system('cp -r %s ./electron_macos/Electron.app/Contents/Resources/app' %(platform_folder))
@@ -159,7 +159,7 @@ def deploy_android(platform, title, release, app):
 
 	if path.exists(title):
 		print("Clean...")
-		os.system('rm -rf %s' %(title))
+		os.rmdir(title)
 
 	print("Run build.py...")
 	app_folder = title if not app else app[1:]
@@ -179,7 +179,7 @@ def deploy_ios(title, app):
 
 	if path.exists(title):
 		print("Clean...")
-		os.system('rm -rf %s' %(title))
+		os.rmdir(title)
 
 	print("Run build.py...")
 	app_folder = title if not app else app[1:]
