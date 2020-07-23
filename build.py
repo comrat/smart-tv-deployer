@@ -224,33 +224,25 @@ if path.exists(manifest_path):
 	print('Manifest parsed, title:', title, 'version', version)
 	print('Build project...')
 	os.system('./qmlcore/build %s -p %s -j %s %s %s' %('-m' if minify else '', platform, jobs, '-s baseurl ' + baseurl if baseurl is not None else '', app if app is not None else ''))
+	print('============== ' + platform.upper() + ' DEPLOYMENT ==============')
 
 	if platform == 'webos':
-		print('============== WEBOS DEPLOYMENT ==============')
 		deploy_webos(manifest_title, version, tv, debug, app_dir)
 	elif platform == 'tizen':
-		print('============== TIZEN DEPLOYMENT ==============')
 		deploy_tizen(title, tv, tizen_profile, app_dir)
 	elif platform == 'netcast':
-		print('============== NETCAST DEPLOYMENT ==============')
 		deploy_netcast(title, version, app_dir)
 	elif platform == 'orsay':
-		print('============== ORSAY DEPLOYMENT ==============')
 		deploy_orsay(title, version, app_dir)
 	elif platform == 'androidtv':
-		print('============== ANDROIDTV DEPLOYMENT ==============')
 		deploy_android('androidtv', title, release, app_dir)
 	elif platform == 'android':
-		print('============== ANDROID DEPLOYMENT ==============')
 		deploy_android('android', title, release, app_dir)
 	elif platform == 'ios':
-		print('============== iOS DEPLOYMENT ==============')
 		deploy_ios(title, app_dir)
 	elif platform == 'webextension':
-		print('============== WEB EXTENSION DEPLOYMENT ==============')
 		deploy_extension(title, version, app_dir)
 	elif platform == 'electronjs':
-		print('============== ELECTRON.JS DEPLOYMENT ==============')
 		deploy_electron(app_dir, electronjs_os)
 	else:
 		print('Unknown platform:', platform)
