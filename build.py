@@ -116,9 +116,9 @@ def deploy_orsay(title, version, app):
 
 def deploy_netcast(title, version, app):
 	result_zip = title + '_' + version + '.zip'
-	if zip_dir(title, version, 'netcast', app, False):
+	if zip_dir(title, version, 'netcast', app, True):
 		print('Done')
-		print('Now you must add DRM subscription to your app, upload build.netcast/' + result_zip + ' here "http://developer.lge.com/apptest/retrieveApptestOSList.dev"')
+		print('Now you must add DRM subscription to your app, upload ' + result_zip + ' to "http://developer.lge.com/apptest/retrieveApptestOSList.dev"')
 	else:
 		print('ERROR: Failed to deploy netcast')
 
