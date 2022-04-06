@@ -1,6 +1,6 @@
 # smart-tv-deployer
-Python script to deploy
-[pureqml](https://github.com/pureqml/qmlcore) apps on SmartTV. You can also run Bash version of the script
+Python script for
+[pureqml](https://github.com/pureqml/qmlcore) apps deploying on SmartTV. You can also run Bash version of the script from the corresponded [branch](https://github.com/comrat/smart-tv-deployer/tree/bash).
 
 # Supported platforms
 * LG WebOS
