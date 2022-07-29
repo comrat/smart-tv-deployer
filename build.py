@@ -64,8 +64,9 @@ def deploy_tizen(title, tv, profile, app):
 	if profile is None:
 		print('Please set profile in --tizen-profile or -tp flag')
 		print('To install your app on TV your result .wgt file must be signed by your profile certificate')
-		print('First of all you must generate certificate or add existed with tizen certificate manager mycert.p12 for example')
-		print('After that provide path to tizen-studio profiles: tizen cli-config -g profiles.path="/home/username/tizen-workspace/.metadata/.plugins/org.tizen.common.sign/profiles.xml"')
+		print('First of all you need to generate the certificate or add the existed one with tizen certificate manager mycert.p12 for example')
+		print('After that provide path to the tizen-studio profiles: tizen cli-config -g profiles.path="/home/username/tizen-workspace/.metadata/.plugins/org.tizen.common.sign/profiles.xml"')
+		print('If you can\'t find the profiles.xml file you can list tizen config files with this command: tizen cli-config -l')
 		print('Then you need to add an security profile: tizen security-profiles add -n MyProfile -a /home/username/tizen-studio-data/keystore/author/mycert.p12 -p 1234')
 		print('Where "1234" is your certificate password')
 		print('If you\'ve done all this steps correctly you can now pass in --tizen-profile or -tp flag your profile name: "MyProfile" in our example')
