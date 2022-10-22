@@ -6,6 +6,7 @@ import sys
 import json
 import argparse
 import os
+import shutil
 from os import path
 
 def __pair_hook(pairs):
@@ -117,9 +118,9 @@ def deploy_orsay(title, version, app):
 
 def deploy_netcast(title, version, app):
 	result_zip = title + '_' + version + '.zip'
-	if zip_dir(title, version, 'netcast', app, True):
+	if zip_dir(title, version, 'netcast', app, False):
 		print('Done')
-		print('Now you must add DRM subscription to your app, upload ' + result_zip + ' to "http://developer.lge.com/apptest/retrieveApptestOSList.dev"')
+		print('Now you must add DRM subscription to your app, upload build.netcast/' + result_zip + ' here "http://developer.lge.com/apptest/retrieveApptestOSList.dev"')
 	else:
 		print('ERROR: Failed to deploy netcast')
 
@@ -175,16 +176,15 @@ def deploy_android(platform, title, release, app):
 
 def deploy_ios(title, app):
 	platform_folder = './build.ios' + app
-	os.system('cd %s' %(platform_folder))
 	os.chdir(platform_folder)
 
 	if path.exists(title):
 		print('Clean...')
-		os.rmdir(title)
+		shutil.rmtree(title)
 
 	print('Run build.py...')
 	app_folder = title if not app else app[1:]
-	os.system('./build.py --app %s --title %s' %(app_folder, app_folder))
+	os.system('../qmlcore/platform/ios/build.py --app %s --title %s' %(app_folder, app_folder))
 
 
 parser = argparse.ArgumentParser('smart-tv-deploy script')
