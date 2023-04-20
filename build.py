@@ -200,6 +200,7 @@ parser.add_argument('--app', '-a', help='target application if there is more tha
 parser.add_argument('--base-url', '-b', help='base URL value if you need to get qml.app.js file remotely', dest='baseurl')
 parser.add_argument('--width', '-w', help='app width (1280 by default)', dest='width')
 parser.add_argument('--height', '-he', help='app height (720 by default)', dest='height')
+parser.add_argument('--set-property', '-sp', dest='properties', action='append', help = 'sets manifest property name value', nargs=2)
 args = parser.parse_args()
 
 manifest_path = '.manifest'
@@ -229,6 +230,11 @@ if path.exists(manifest_path):
 	print('Manifest parsed, title:', title, 'version', version)
 	print('Build project...')
 	params = '-s baseurl ' + baseurl if baseurl is not None else ''
+
+	if args.properties:
+		for name, value in args.properties:
+			params += '-s ' + name + ' ' + value
+
 	if width and height:
 		params = '-s resolutionWidth ' + width + ' -s resolutionHeight ' + height
 	os.system('./qmlcore/build %s -p %s -j %s %s %s' %('-m' if minify else '', platform, jobs, params, app if app is not None else ''))
