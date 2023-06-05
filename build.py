@@ -174,6 +174,11 @@ def deploy_android(platform, title, release, app):
 	os.system('adb install -r ./%s/platforms/android/build/outputs/apk/debug/android-debug.apk' %(title))
 
 
+def deploy_android_native(title, release, app):
+	os.system('./qmlcore/platform/pure.femto/build-android-native.sh')
+	os.system('adb install ./build.pure.femto.%s/app/app/build/outputs/apk/debug/app-debug.apk' %(app))
+
+
 def deploy_ios(title, app):
 	platform_folder = './build.ios' + app
 	os.chdir(platform_folder)
@@ -252,6 +257,8 @@ if path.exists(manifest_path):
 		deploy_android('androidtv', title, release, app_dir)
 	elif platform == 'android':
 		deploy_android('android', title, release, app_dir)
+	elif platform == 'androidnative':
+		deploy_android_native(title, release, app_dir)
 	elif platform == 'ios':
 		deploy_ios(title, app_dir)
 	elif platform == 'webextension':
