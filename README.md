@@ -89,8 +89,15 @@ To build android projects you need to install [cordova](https://cordova.apache.o
 ```
 ./build.py -p androidtv
 ```
-The result apk will be located in path: ```./build.androidtv/<your_app_title>/platforms/android/build/outputs/apk/debug/android-debug.apk``` where
+The result apk file will be located in path: ```./build.androidtv/<your_app_title>/platforms/android/build/outputs/apk/debug/android-debug.apk``` where
 * ```your_app_title``` - your app title from ```.manifest``` file
+
+### AndroidTV (native)
+To build the native android project run this command:
+```
+./build.py -p androidnative
+```
+The result apk file will be located here: ```./build.pure.femto.%s/app/app/build/outputs/apk/debug/app-debug.apk```
 
 ### iOS
 To build iOS projects you need to install [cordova](https://cordova.apache.org/) first. Then run the script:
