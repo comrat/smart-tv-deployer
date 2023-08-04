@@ -169,6 +169,7 @@ def deploy_android(platform, title, release, app):
 		os.system('./build.py --app %s --title %s --release' %(app_folder, app_folder))
 	else:
 		os.system('./build.py --app %s --title %s' %(app_folder, app_folder))
+	os.system('rm ./build.py')
 
 	print('Install via adb...')
 	os.system('adb install -r ./%s/platforms/android/build/outputs/apk/debug/android-debug.apk' %(title))
