@@ -245,7 +245,7 @@ if path.exists(manifest_path):
 		params = '-s resolutionWidth ' + width + ' -s resolutionHeight ' + height
 
 	if release:
-		params = '-r '
+		params += '-r '
 
 	os.system('./qmlcore/build %s -p %s -j %s %s %s' %('-m' if minify else '', platform, jobs, params, app if app is not None else ''))
 	print('============== ' + platform.upper() + ' DEPLOYMENT ==============')
