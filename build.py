@@ -200,7 +200,7 @@ parser.add_argument('--platform', '-p', help='target platform: webos|netcast|tiz
 parser.add_argument('--os', '-os', help='target electronjs OS', dest='electronjs_os')
 parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', dest='tizen_profile')
 parser.add_argument('--tv', '-t', help='TV name', dest='tv')
-parser.add_argument('--release', '-r', help='build release apk for android platform', dest='release', default=False)
+parser.add_argument('--release', '-r', help='build release apk for android platform', default=False)
 parser.add_argument('--debug', '-d', help='start debugging afer building', dest='debug', default=False)
 parser.add_argument('--app', '-a', help='target application if there is more than one apps in project', dest='app')
 parser.add_argument('--base-url', '-b', help='base URL value if you need to get qml.app.js file remotely', dest='baseurl')
@@ -243,6 +243,10 @@ if path.exists(manifest_path):
 
 	if width and height:
 		params = '-s resolutionWidth ' + width + ' -s resolutionHeight ' + height
+
+	if release:
+		params = '-r '
+
 	os.system('./qmlcore/build %s -p %s -j %s %s %s' %('-m' if minify else '', platform, jobs, params, app if app is not None else ''))
 	print('============== ' + platform.upper() + ' DEPLOYMENT ==============')
 
