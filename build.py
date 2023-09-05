@@ -35,7 +35,9 @@ def parse_manifest(manifest):
 	if properties:
 		title = properties.get('title', 'app')
 		version = properties.get('version', '1.0.0')
-	return title, version
+		android_build = properties.get('androidBuild', {})
+
+	return title, version, android_build
 
 
 def deploy_webos(title, version, tv, debug, app):
@@ -138,13 +140,13 @@ def deploy_electron(app, electronjs_os):
 	platform_folder = './build.electronjs' + app
 	if electronjs_os == 'windows':
 		print('Make windows build...')
-		os.rmdir('./electron_win')
+		shutil.rmtree('./electron_win')
 		os.system('mkdir ./electron_win')
 		os.system('cp -r ./smart-tv-deployer/dist/electronjs/windows/* ./electron_win/.')
 		os.system('cp -r %s ./electron_win/resources/app' %(platform_folder))
 	if electronjs_os == "macos":
 		print('Make MacOS build...')
-		os.rmdir('./electron_macos')
+		shutil.rmtree('./electron_macos')
 		os.system('mkdir ./electron_macos')
 		os.system('unzip ./smart-tv-deployer/dist/electronjs/macos/Electron.app.zip -d ./electron_macos/.')
 		os.system('cp -r %s ./electron_macos/Electron.app/Contents/Resources/app' %(platform_folder))
@@ -154,14 +156,14 @@ def deploy_electron(app, electronjs_os):
 		os.system('npm start')
 
 
-def deploy_android(platform, title, release, app):
+def deploy_android(platform, title, release, app, android_build):
 	platform_folder = './build.' + platform + app
 	os.system('cd %s' %(platform_folder))
 	os.chdir(platform_folder)
 
 	if path.exists(title):
 		print('Clean...')
-		os.rmdir(title)
+		shutil.rmtree(title)
 
 	print('Run build.py...')
 	app_folder = title if not app else app[1:]
@@ -169,7 +171,8 @@ def deploy_android(platform, title, release, app):
 		os.system('./build.py --app %s --title %s --release' %(app_folder, app_folder))
 	else:
 		os.system('./build.py --app %s --title %s' %(app_folder, app_folder))
-	os.system('rm ./build.py')
+
+	os.system('../qmlcore/platform/android/build.py --app %s --title %s' %(app_folder, app_folder))
 
 	print('Install via adb...')
 	os.system('adb install -r ./%s/platforms/android/build/outputs/apk/debug/android-debug.apk' %(title))
@@ -228,7 +231,8 @@ if platform is None:
 	sys.exit(1)
 
 if path.exists(manifest_path):
-	manifest_title, version = parse_manifest(manifest_path)
+	manifest_title, version, android_build = parse_manifest(manifest_path)
+
 	title = manifest_title
 	if args.app is not None:
 		title = args.app
@@ -259,9 +263,9 @@ if path.exists(manifest_path):
 	elif platform == 'orsay':
 		deploy_orsay(title, version, app_dir)
 	elif platform == 'androidtv':
-		deploy_android('androidtv', title, release, app_dir)
+		deploy_android('androidtv', title, release, app_dir, android_build)
 	elif platform == 'android':
-		deploy_android('android', title, release, app_dir)
+		deploy_android('android', title, release, app_dir, android_build)
 	elif platform == 'androidnative':
 		deploy_android_native(title, release, app_dir)
 	elif platform == 'ios':
