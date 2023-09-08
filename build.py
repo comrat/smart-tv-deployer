@@ -274,6 +274,8 @@ if path.exists(manifest_path):
 		deploy_extension(title, version, app_dir)
 	elif platform == 'electronjs':
 		deploy_electron(app_dir, electronjs_os)
+	elif platform == 'hisense':
+		print('Hisense build is in build.hisense%s:' %app_dir)
 	else:
 		print('Unknown platform:', platform)
 else:
