@@ -21,6 +21,16 @@ def __pair_hook(pairs):
 		obj[k] = v
 	return obj
 
+def parse_webos_appinfo(appinfo):
+	data = None
+	with open(appinfo) as f:
+		data = json.load(f, object_pairs_hook = __pair_hook)
+	if data is None:
+		data = {}
+
+	app_id = data.get('id', '')
+
+	return app_id
 
 def parse_manifest(manifest):
 	data = None
@@ -41,17 +51,21 @@ def parse_manifest(manifest):
 
 
 def deploy_webos(title, version, tv, debug, app):
+	print("Packaging...")
 	os.system('$WEBOS_CLI_TV/ares-package build.webos%s' %(app))
+	app_id = parse_webos_appinfo('build.webos' + app + '/appinfo.json')
+	print("Webos App ID:", app_id)
+
 	if tv is not None:
-		os.system('$WEBOS_CLI_TV/ares-install com.%s.app_%s_all.ipk -d %s' %(title, version, tv))
-		os.system('$WEBOS_CLI_TV/ares-launch com.%s.app -d %s' %(title, tv))
+		os.system('$WEBOS_CLI_TV/ares-install %s_%s_all.ipk -d %s' %(app_id, version, tv))
+		os.system('$WEBOS_CLI_TV/ares-launch %s -d %s' %(app_id, tv))
 		if debug is True:
-			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.app -d %s' %(title, tv))
+			os.system('$WEBOS_CLI_TV/ares-inspect %s -d %s' %(app_id, tv))
 	else:
-		os.system('$WEBOS_CLI_TV/ares-install com.%s.app_%s_all.ipk' %(title, version))
-		os.system('$WEBOS_CLI_TV/ares-launch com.%s.app' %(title))
+		os.system('$WEBOS_CLI_TV/ares-install %s_%s_all.ipk' %(app_id, version))
+		os.system('$WEBOS_CLI_TV/ares-launch %s' %(app_id))
 		if debug is True:
-			os.system('$WEBOS_CLI_TV/ares-inspect com.%s.app' %(title))
+			os.system('$WEBOS_CLI_TV/ares-inspect %s' %(app_id))
 
 
 def deploy_tizen(title, tv, profile, app):
