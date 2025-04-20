@@ -219,7 +219,7 @@ parser.add_argument('--os', '-os', help='target electronjs OS', dest='electronjs
 parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', dest='tizen_profile')
 parser.add_argument('--tv', '-t', help='TV name', dest='tv')
 parser.add_argument('--release', '-r', help='generate release code (no logs)', default = False, action = 'store_true')
-parser.add_argument('--build_only', '-B', help='generate apk file (without deploy)', default = False)
+parser.add_argument('--build-only', '-B', help='generate apk file (without deploy)', default = False)
 parser.add_argument('--debug', '-d', help='start debugging after building', dest='debug', default=False)
 parser.add_argument('--app', '-a', help='target application if there is more than one apps in project', dest='app')
 parser.add_argument('--base-url', '-b', help='base URL value if you need to get qml.app.js file remotely', dest='baseurl')
@@ -234,7 +234,7 @@ electronjs_os = args.electronjs_os
 platform = args.platform
 tv = args.tv
 release = args.release
-build_only = args.build_only
+build_only = args.buildonly
 debug = args.debug
 jobs = args.jobs
 minify = args.minify
