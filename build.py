@@ -2,12 +2,13 @@
 
 from __future__ import print_function
 
-import sys
-import json
 import argparse
+import json
 import os
 import shutil
+import sys
 from os import path
+
 
 def __pair_hook(pairs):
 	obj = {}
@@ -170,7 +171,7 @@ def deploy_electron(app, electronjs_os):
 		os.system('npm start')
 
 
-def deploy_android(platform, title, release, app, android_build):
+def deploy_android(platform, title, release, build_only, app, android_build):
 	platform_folder = './build.' + platform + app
 	os.system('cd %s' %(platform_folder))
 	os.chdir(platform_folder)
@@ -181,16 +182,16 @@ def deploy_android(platform, title, release, app, android_build):
 
 	print('Run build.py...')
 	app_folder = title if not app else app[1:]
-	if release:
-		os.system('./build.py --app %s --title %s --release' %(app_folder, app_folder))
-	else:
-		os.system('./build.py --app %s --title %s' %(app_folder, app_folder))
-
-	os.system('../qmlcore/platform/android/build.py --app %s --title %s' %(app_folder, app_folder))
-
+	os.system('./build.py --app %s --title %s %s' %(app_folder, app_folder, '--release' if release else ''))
 	print('Install via adb...')
-	os.system('adb install -r ./%s/platforms/android/build/outputs/apk/debug/android-debug.apk' %(title))
-
+	apkFilePath = '%s/platforms/android/app/build/outputs/apk/debug/app-debug.apk' %title
+	if path.exists(apkFilePath):
+		if build_only:
+			os.system('cp %s ./%s.apk' %(apkFilePath, app_folder))
+		else:
+			os.system('adb install -r %s' %apkFilePath)
+	else:
+		print('No .apk file at path %s' %apkFilePath)
 
 def deploy_android_native(title, release, app):
 	os.system('./qmlcore/platform/pure.femto/build-android-native.sh')
@@ -217,8 +218,9 @@ parser.add_argument('--platform', '-p', help='target platform: webos|netcast|tiz
 parser.add_argument('--os', '-os', help='target electronjs OS', dest='electronjs_os')
 parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', dest='tizen_profile')
 parser.add_argument('--tv', '-t', help='TV name', dest='tv')
-parser.add_argument('--release', '-r', help='generate release code (no logs)', default = False, action = 'store_true')
-parser.add_argument('--debug', '-d', help='start debugging afer building', dest='debug', default=False)
+parser.add_argument('--release', '-r', help='generate release code (no logs)', default=False, action='store_true')
+parser.add_argument('--build-only', '-B', help='generate apk file (without deploy)', default=False, action='store_true', dest='buildonly')
+parser.add_argument('--debug', '-d', help='start debugging after building', dest='debug', default=False)
 parser.add_argument('--app', '-a', help='target application if there is more than one apps in project', dest='app')
 parser.add_argument('--base-url', '-b', help='base URL value if you need to get qml.app.js file remotely', dest='baseurl')
 parser.add_argument('--width', '-w', help='app width (1280 by default)', dest='width')
@@ -232,6 +234,7 @@ electronjs_os = args.electronjs_os
 platform = args.platform
 tv = args.tv
 release = args.release
+build_only = args.buildonly
 debug = args.debug
 jobs = args.jobs
 minify = args.minify
@@ -257,10 +260,10 @@ if path.exists(manifest_path):
 
 	if args.properties:
 		for name, value in args.properties:
-			params += '-s ' + name + ' ' + value
+			params += ' -s ' + name + ' ' + value
 
 	if width and height:
-		params = '-s resolutionWidth ' + width + ' -s resolutionHeight ' + height
+		params = ' -s resolutionWidth ' + width + ' -s resolutionHeight ' + height
 
 	if release:
 		params += ' -r '
@@ -277,9 +280,9 @@ if path.exists(manifest_path):
 	elif platform == 'orsay':
 		deploy_orsay(title, version, app_dir)
 	elif platform == 'androidtv':
-		deploy_android('androidtv', title, release, app_dir, android_build)
+		deploy_android('androidtv', title, release, build_only, app_dir, android_build)
 	elif platform == 'android':
-		deploy_android('android', title, release, app_dir, android_build)
+		deploy_android('android', title, release, build_only, app_dir, android_build)
 	elif platform == 'androidnative':
 		deploy_android_native(title, release, app_dir)
 	elif platform == 'ios':
