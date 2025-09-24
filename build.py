@@ -51,25 +51,24 @@ def parse_manifest(manifest):
 	return title, version, android_build
 
 
-def deploy_webos(title, version, tv, debug, app):
-	print("Packaging...")
-	os.system('$WEBOS_CLI_TV/ares-package build.webos%s' %(app))
+def deploy_webos(title, version, tv, debug, build_only, app):
+	print('Packaging... %s' %(title))
+	os.system('$WEBOS_CLI_TV/ares-package build.webos%s -o build.webos' %(app))
 	app_id = parse_webos_appinfo('build.webos' + app + '/appinfo.json')
 	print("Webos App ID:", app_id)
-
-	if tv is not None:
-		os.system('$WEBOS_CLI_TV/ares-install %s_%s_all.ipk -d %s' %(app_id, version, tv))
-		os.system('$WEBOS_CLI_TV/ares-launch %s -d %s' %(app_id, tv))
-		if debug is True:
-			os.system('$WEBOS_CLI_TV/ares-inspect %s -d %s' %(app_id, tv))
+	appFilePath = '%s/%s_%s_all.ipk' %(title, app_id, version)
+	app_folder = title if not app else app[1:]
+	if build_only:
+		print('Building ipk file...')
+		os.system('cp %s ./%s.ipk' %(appFilePath, app_folder))
 	else:
-		os.system('$WEBOS_CLI_TV/ares-install %s_%s_all.ipk' %(app_id, version))
-		os.system('$WEBOS_CLI_TV/ares-launch %s' %(app_id))
+		print('Installing...')
+		os.system('$WEBOS_CLI_TV/ares-install %s_%s_all.ipk %s' %(app_id, version, ("-d %s" %tv) if tv else ''))
+		os.system('$WEBOS_CLI_TV/ares-launch %s %s' %(app_id, ("-d %s" %tv) if tv else ''))
 		if debug is True:
-			os.system('$WEBOS_CLI_TV/ares-inspect %s' %(app_id))
+			os.system('$WEBOS_CLI_TV/ares-inspect %s %s' %(app_id, ("-d %s" %tv) if tv else ''))
 
-
-def deploy_tizen(title, tv, profile, app):
+def deploy_tizen(title, tv, profile, build_only, app):
 	if tv is None:
 		print('Please set target device name in --tv or -t flag')
 		print('You can see available devices with command "sdb devices"')
@@ -93,14 +92,19 @@ def deploy_tizen(title, tv, profile, app):
 	tizen_installed = os.system('tizen version')
 	if tizen_installed == 0:
 		os.chdir('./build.tizen' + app)
-		result_wgt = title + '.wgt'
+		appFilePath = result_wgt = title + '.wgt'
+		app_folder = title if not app else app[1:]
 
 		if path.exists(result_wgt):
 			print('Remove previous WGT file...')
 			os.remove(result_wgt)
-
-		os.system('tizen package -t wgt -s %s' %(profile))
-		os.system('tizen install -n %s -t %s' %(result_wgt, tv))
+			os.system('tizen package -t wgt -s %s' %(profile))
+			if build_only:
+				print('Building wgt file...')
+				os.system('cp %s ./%s.wgt' %(appFilePath, app_folder))
+			else:
+				print('Installing...')
+				os.system('tizen install -n %s -t %s' %(result_wgt, tv))
 		print('If you see "Failed to install Tizen application." log up there don\'t worry, check "My App" list on target device your app may be installed (see https://stackoverflow.com/a/42966767 for details)')
 	else:
 		print('"tizen" command not defined. If you\'ve installed tizen-studio already export it\'s "bin" directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin')
@@ -273,9 +277,9 @@ if path.exists(manifest_path):
 	print('============== ' + platform.upper() + ' DEPLOYMENT ==============')
 
 	if platform == 'webos':
-		deploy_webos(manifest_title, version, tv, debug, app_dir)
+		deploy_webos(manifest_title, version, tv, debug, build_only, app_dir)
 	elif platform == 'tizen':
-		deploy_tizen(title, tv, tizen_profile, app_dir)
+		deploy_tizen(title, tv, tizen_profile, build_only, app_dir)
 	elif platform == 'netcast':
 		deploy_netcast(title, version, app_dir)
 	elif platform == 'orsay':
