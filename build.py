@@ -53,14 +53,18 @@ def parse_manifest(manifest):
 
 def deploy_webos(title, version, tv, debug, build_only, app):
 	print('Packaging...')
-	app_folder = "build.webos/%s" %(title if not app else app[1:])
-	os.system('$WEBOS_CLI_TV/ares-package build.webos%s -o %s' %(app, app_folder))
-	app_id = parse_webos_appinfo('build.webos' + app + '/appinfo.json')
+	# app_folder = "build.webos/%s" %(title if not app else app[1:])
+	app_folder = "build.webos/"
+	os.system('$WEBOS_CLI_TV/ares-package %s -o %s' %(app_folder, app_folder))
+	app_id = parse_webos_appinfo(app_folder + app + '/appinfo.json')
 	print("Webos App ID:", app_id)
 	app_file = '%s_%s_all.ipk' %(app_id, version)
-	if build_only not in [False, None]:
+	app_file_path = app_folder + app_file
+	if build_only:
+		print('IPK file bundled')
+	else:
 		print('Installing...')
-		os.system('$WEBOS_CLI_TV/ares-install %s %s' %(app_file, ("-d %s" %tv) if tv else ''))
+		os.system('$WEBOS_CLI_TV/ares-install %s %s' %(app_file_path, ("-d %s" %tv) if tv else ''))
 		os.system('$WEBOS_CLI_TV/ares-launch %s %s' %(app_id, ("-d %s" %tv) if tv else ''))
 		if debug is True:
 			os.system('$WEBOS_CLI_TV/ares-inspect %s %s' %(app_id, ("-d %s" %tv) if tv else ''))
@@ -88,20 +92,21 @@ def deploy_tizen(title, tv, profile, build_only, app):
 
 	tizen_installed = os.system('tizen version')
 	if tizen_installed == 0:
-		os.chdir('./build.tizen' + app)
-		app_folder = "build.tizen/%s" %(title if not app else app[1:])
-		app_file = result_wgt = title + '.wgt'
+		# app_folder = "build.tizen/%s" %(title if not app else app[1:])
+		app_folder = "build.tizen/"
+		os.chdir('./' + app_folder + app)
+		app_file = title + '.wgt'
 
-		if path.exists(result_wgt):
+		if path.exists(app_file):
 			print('Remove previous WGT file...')
-			os.remove(result_wgt)
+			os.remove(app_file)
 			os.system('tizen package -t wgt -s %s' %(profile))
 			if build_only:
 				print('Building wgt file...')
-				os.system('cp %s ./%s.wgt' %(app_file, app_folder))
+				os.system('cp %s %s' %(app_file, app_folder))
 			else:
 				print('Installing...')
-				os.system('tizen install -n %s -t %s' %(result_wgt, tv))
+				os.system('tizen install -n %s -t %s' %(app_file, tv))
 		print('If you see "Failed to install Tizen application." log up there don\'t worry, check "My App" list on target device your app may be installed (see https://stackoverflow.com/a/42966767 for details)')
 	else:
 		print('"tizen" command not defined. If you\'ve installed tizen-studio already export it\'s "bin" directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin')
@@ -274,7 +279,7 @@ if path.exists(manifest_path):
 	print('============== ' + platform.upper() + ' DEPLOYMENT ==============')
 
 	if platform == 'webos':
-		deploy_webos(manifest_title, version, tv, debug, build_only, app_dir)
+		deploy_webos(title, version, tv, debug, build_only, app_dir)
 	elif platform == 'tizen':
 		deploy_tizen(title, tv, tizen_profile, build_only, app_dir)
 	elif platform == 'netcast':
