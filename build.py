@@ -52,18 +52,15 @@ def parse_manifest(manifest):
 
 
 def deploy_webos(title, version, tv, debug, build_only, app):
-	print('Packaging... %s' %(title))
-	os.system('$WEBOS_CLI_TV/ares-package build.webos%s -o build.webos' %(app))
+	print('Packaging...')
+	app_folder = "build.webos/%s" %(title if not app else app[1:])
+	os.system('$WEBOS_CLI_TV/ares-package build.webos%s -o %s' %(app, app_folder))
 	app_id = parse_webos_appinfo('build.webos' + app + '/appinfo.json')
 	print("Webos App ID:", app_id)
-	appFilePath = '%s/%s_%s_all.ipk' %(title, app_id, version)
-	app_folder = title if not app else app[1:]
-	if build_only:
-		print('Building ipk file...')
-		os.system('cp %s ./%s.ipk' %(appFilePath, app_folder))
-	else:
+	app_file = '%s_%s_all.ipk' %(app_id, version)
+	if build_only not in [False, None]:
 		print('Installing...')
-		os.system('$WEBOS_CLI_TV/ares-install %s_%s_all.ipk %s' %(app_id, version, ("-d %s" %tv) if tv else ''))
+		os.system('$WEBOS_CLI_TV/ares-install %s %s' %(app_file, ("-d %s" %tv) if tv else ''))
 		os.system('$WEBOS_CLI_TV/ares-launch %s %s' %(app_id, ("-d %s" %tv) if tv else ''))
 		if debug is True:
 			os.system('$WEBOS_CLI_TV/ares-inspect %s %s' %(app_id, ("-d %s" %tv) if tv else ''))
@@ -92,8 +89,8 @@ def deploy_tizen(title, tv, profile, build_only, app):
 	tizen_installed = os.system('tizen version')
 	if tizen_installed == 0:
 		os.chdir('./build.tizen' + app)
-		appFilePath = result_wgt = title + '.wgt'
-		app_folder = title if not app else app[1:]
+		app_folder = "build.tizen/%s" %(title if not app else app[1:])
+		app_file = result_wgt = title + '.wgt'
 
 		if path.exists(result_wgt):
 			print('Remove previous WGT file...')
@@ -101,7 +98,7 @@ def deploy_tizen(title, tv, profile, build_only, app):
 			os.system('tizen package -t wgt -s %s' %(profile))
 			if build_only:
 				print('Building wgt file...')
-				os.system('cp %s ./%s.wgt' %(appFilePath, app_folder))
+				os.system('cp %s ./%s.wgt' %(app_file, app_folder))
 			else:
 				print('Installing...')
 				os.system('tizen install -n %s -t %s' %(result_wgt, tv))
@@ -187,16 +184,16 @@ def deploy_android(platform, title, release, build_only, app, android_build):
 	print('Run build.py...')
 	app_folder = title if not app else app[1:]
 	os.system('./build.py --app %s --title %s %s' %(app_folder, app_folder, '--release' if release else ''))
-	apkFilePath = '%s/platforms/android/app/build/outputs/apk/debug/app-debug.apk' %title
-	if path.exists(apkFilePath):
+	app_file_path = '%s/platforms/android/app/build/outputs/apk/debug/app-debug.apk' %title
+	if path.exists(app_file_path):
 		if build_only:
 			print('Building apk file...')
-			os.system('cp %s ./%s.apk' %(apkFilePath, app_folder))
+			os.system('cp %s ./%s.apk' %(app_file_path, app_folder))
 		else:
 			print('Install via adb...')
-			os.system('adb install -r %s' %apkFilePath)
+			os.system('adb install -r %s' %app_file_path)
 	else:
-		print('No .apk file at path %s' %apkFilePath)
+		print('No .apk file at path %s' %app_file_path)
 
 def deploy_android_native(title, release, app):
 	os.system('./qmlcore/platform/pure.femto/build-android-native.sh')
