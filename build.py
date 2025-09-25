@@ -95,12 +95,12 @@ def deploy_tizen(title, tv, profile, build_only, app):
 		# app_folder = "build.tizen/%s" %(title if not app else app[1:])
 		app_folder = "build.tizen/"
 		os.chdir('./' + app_folder + app)
-		app_file = title + '.wgt'
-
+		app_file = "%s-%s.wgt'" %(title, version)
+		print('Packaging...')
+		os.system('tizen package -t wgt -s %s' %(profile))
 		if path.exists(app_file):
 			print('Remove previous WGT file...')
 			os.remove(app_file)
-			os.system('tizen package -t wgt -s %s' %(profile))
 			if build_only:
 				print('Building wgt file...')
 				os.system('cp %s %s' %(app_file, app_folder))
