@@ -91,9 +91,8 @@ def deploy_tizen(title, tv, profile, build_only, app):
 
 	tizen_installed = os.system('tizen version')
 	if tizen_installed == 0:
-		# app_folder = "build.tizen/%s" %(title if not app else app[1:])
-		app_folder = "build.tizen/"
-		os.chdir('./' + app_folder + app)
+		app_folder = "build.tizen/%s" %("" if not app else app[1:])
+		os.chdir('./' + app_folder)
 		app_file = "%s-%s.wgt'" %(title, version)
 		print('Packaging...')
 		os.system('tizen package -t wgt -s %s' %(profile))
