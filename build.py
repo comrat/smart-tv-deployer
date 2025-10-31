@@ -182,17 +182,28 @@ def deploy_android(platform, title, release, build_only, app, android_build):
 
 	print('Run build.py...')
 	app_folder = title if not app else app[1:]
-	os.system('./build.py --app %s --title %s %s' %(app_folder, app_folder, '--release' if release else ''))
-	apkFilePath = '%s/platforms/android/app/build/outputs/apk/debug/app-debug.apk' %title
-	if path.exists(apkFilePath):
+	release_arg = '--release' if release else ''
+	os.system('./build.py --app %s --title %s %s' %(app_folder, app_folder, release_arg))
+	build_type = 'release' if release else 'debug'
+	output_path = '%s/platforms/android/app/build/outputs/' %title
+	apk_file_path = '%s/apk/%s/app-%s.apk' %(output_path, build_type, build_type)
+	aab_file_path = '%s/bundle/%s/app-%s.aab' %(output_path, build_type, build_type)
+	if path.exists(apk_file_path):
 		if build_only:
 			print('Building apk file...')
-			os.system('cp %s ./%s.apk' %(apkFilePath, app_folder))
+			os.system('cp %s ./%s.apk' %(apk_file_path, app_folder))
 		else:
 			print('Install via adb...')
-			os.system('adb install -r %s' %apkFilePath)
+			os.system('adb install -r %s' %apk_file_path)
+	elif path.exists(aab_file_path):
+		if build_only:
+			print('Building aab file...')
+			os.system('cp %s ./%s.aab' %(aab_file_path, app_folder))
+		else:
+			print('Install via adb...')
+			print('Installing aab files via adb is not supported yet. Please use apk file or upload aab to Google Play Console.')
 	else:
-		print('No .apk file at path %s' %apkFilePath)
+		print('No .(apk|aab) file at path %s' %output_path)
 
 def deploy_android_native(title, release, app):
 	os.system('./qmlcore/platform/pure.femto/build-android-native.sh')
@@ -213,13 +224,13 @@ def deploy_ios(title, app):
 
 
 parser = argparse.ArgumentParser('smart-tv-deploy script')
-parser.add_argument('--minify', '-m', action='store_true', help='force minify step', dest='minify', default=False)
+parser.add_argument('--minify', '-m', help='force minify step', action='store_true', dest='minify')
 parser.add_argument('--jobs', '-j', help='run N jobs in parallel', dest='jobs', default=1, nargs='?')
 parser.add_argument('--platform', '-p', help='target platform: webos|netcast|tizen|orsay|androidtv', dest='platform')
 parser.add_argument('--os', '-os', help='target electronjs OS', dest='electronjs_os')
 parser.add_argument('--tizen-profile', '-tp', help='tizen studio profile path', dest='tizen_profile')
 parser.add_argument('--tv', '-t', help='TV name', dest='tv')
-parser.add_argument('--release', '-r', help='generate release code (no logs)', default = False, action = 'store_true')
+parser.add_argument('--release', '-r', help='generate release code (no logs)', action='store_true', dest='release')
 parser.add_argument('--build-only', '-B', help='generate apk file (without deploy)', default=False, action='store_true', dest='buildonly')
 parser.add_argument('--debug', '-d', help='start debugging after building', dest='debug', default=False)
 parser.add_argument('--app', '-a', help='target application if there is more than one apps in project', dest='app')
