@@ -53,10 +53,9 @@ def parse_manifest(manifest):
 
 def deploy_webos(title, version, tv, debug, build_only, app):
 	print('Packaging...')
-	# app_folder = "build.webos/%s" %(title if not app else app[1:])
-	app_folder = "build.webos/"
+	app_folder = "build.webos/%s" %("" if not app else app[1:])
 	os.system('$WEBOS_CLI_TV/ares-package %s -o %s' %(app_folder, app_folder))
-	app_id = parse_webos_appinfo(app_folder + app + '/appinfo.json')
+	app_id = parse_webos_appinfo(app_folder + '/appinfo.json')
 	print("Webos App ID:", app_id)
 	app_file = '%s_%s_all.ipk' %(app_id, version)
 	app_file_path = app_folder + app_file
