@@ -8,6 +8,18 @@ import os
 import shutil
 import sys
 from os import path
+import subprocess
+import re
+import xml.etree.ElementTree as ET
+
+
+def run_cmd(cmd, check=True):
+	print(cmd)
+	result = subprocess.run(cmd, shell=True)
+	if check and result.returncode != 0:
+		print(f"❌ Command failed: {cmd}")
+		sys.exit(result.returncode)
+	return result.returncode
 
 
 def __pair_hook(pairs):
@@ -22,6 +34,7 @@ def __pair_hook(pairs):
 		obj[k] = v
 	return obj
 
+
 def parse_webos_appinfo(appinfo):
 	data = None
 	with open(appinfo) as f:
@@ -32,6 +45,7 @@ def parse_webos_appinfo(appinfo):
 	app_id = data.get('id', '')
 
 	return app_id
+
 
 def parse_manifest(manifest):
 	data = None
@@ -68,46 +82,60 @@ def deploy_webos(title, version, tv, debug, build_only, app):
 		if debug is True:
 			os.system('$WEBOS_CLI_TV/ares-inspect %s %s' %(app_id, ("-d %s" %tv) if tv else ''))
 
+
 def deploy_tizen(title, tv, profile, build_only, app):
 	if tv is None:
-		print('Please set target device name in --tv or -t flag')
+		print('❌ Set target device name in --tv or -t flag')
 		print('You can see available devices with command "sdb devices"')
-		print('What is sdb? Smart Development Bridge - CLI tool used by Tizen (see https://developer.tizen.org/ko/development/tizen-studio/web-tools/running-and-testing-your-app/sdb?langredirect=1)')
-		print('You can add symlink for sdb: sudo ln -s /home/username/tizen-studio/tools/sdb /usr/bin/sdb')
 		print('Don\'t forget to connect to desired device! For example this command connect to TV with 192.168.1.1 IP address: sdb connect 192.168.1.1:26101')
-		print('P.S. You need to type your IP address in developer mode on target TV')
 		sys.exit(1)
 
+	tizen_installed = run_cmd('tizen version')
+	if tizen_installed != 0:
+		print('❌ "tizen" command not defined. If you\'ve installed tizen-cli already add it\'s "bin" directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin')
+		sys.exit(1)
+
+	active_profile = "default"
 	if profile is None:
-		print('Please set profile in --tizen-profile or -tp flag')
-		print('To install your app on TV your result .wgt file must be signed by your profile certificate')
-		print('First of all you need to generate the certificate or add the existed one with tizen certificate manager mycert.p12 for example')
-		print('After that provide path to the tizen-studio profiles: tizen cli-config -g profiles.path="/home/username/tizen-workspace/.metadata/.plugins/org.tizen.common.sign/profiles.xml"')
-		print('If you can\'t find the profiles.xml file you can list tizen config files with this command: tizen cli-config -l')
-		print('Then you need to add an security profile: tizen security-profiles add -n MyProfile -a /home/username/tizen-studio-data/keystore/author/mycert.p12 -p 1234')
-		print('Where "1234" is your certificate password')
-		print('If you\'ve done all this steps correctly you can now pass in --tizen-profile or -tp flag your profile name: "MyProfile" in our example')
-		sys.exit(1)
+		print('Use current active tizen profile...')
+		command = 'tizen security-profiles list | awk \'NR > 2 && $2 == "O" { print $1; exit }\''
+		output = subprocess.check_output(command, shell=True, text=True)
+		active_profile = output.strip()
+	print('Current active profile:', active_profile)
 
-	tizen_installed = os.system('tizen version')
-	if tizen_installed == 0:
-		app_folder = "build.tizen/%s" %("" if not app else app[1:])
-		os.chdir('./' + app_folder)
-		app_file = "%s-%s.wgt'" %(title, version)
-		print('Packaging...')
-		os.system('tizen package -t wgt -s %s' %(profile))
-		if path.exists(app_file):
-			print('Remove previous WGT file...')
-			os.remove(app_file)
-			if build_only:
-				print('Building wgt file...')
-				os.system('cp %s %s' %(app_file, app_folder))
-			else:
-				print('Installing...')
-				os.system('tizen install -n %s -t %s' %(app_file, tv))
-		print('If you see "Failed to install Tizen application." log up there don\'t worry, check "My App" list on target device your app may be installed (see https://stackoverflow.com/a/42966767 for details)')
+	app_folder = "build.tizen/%s" %("" if not app else app[1:])
+	os.chdir('./' + app_folder)
+
+	print('Packaging...')
+	tizen_output = subprocess.check_output('tizen package -t wgt -s %s' %(active_profile), shell=True, text=True)
+	output_file_match = re.search(r'Package File Location:\s*(.+\.wgt)', str(tizen_output))
+	if output_file_match is None:
+		print("❌ Can't find a wgt file")
+		sys.exit(1)
+	wgt_file = output_file_match.group(1)
+	print('✅ Packaged file:', wgt_file)
+
+	print('Installing...')
+	run_cmd('tizen install -n %s -t %s' %(wgt_file, tv))
+	print('✅ Installed')
+
+
+	print('Launching...')
+	tree = ET.parse('config.xml')
+	root = tree.getroot()
+	widget_id = root.get('id')
+	ns = {'tizen': 'http://tizen.org/ns/widgets'}
+	app = root.find('tizen:application', ns)
+	print(f"Widget appID: {app}")
+
+	if app is not None:
+		app_id = app.get('id')
+		package = app.get('package')
+		print(f"Application ID: {app_id}")
+		run_cmd(f'tizen run -p {app_id} -t {tv}')
+		print('✅ Launched')
 	else:
-		print('"tizen" command not defined. If you\'ve installed tizen-studio already export it\'s "bin" directory to PATH. For example export PATH=\$PATH:/home/username/tizen-studio/tools/ide/bin')
+		print("❌ Failed to launch")
 
 
 def zip_dir(title, version, platform, app, withFolder):
