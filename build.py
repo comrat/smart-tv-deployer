@@ -68,7 +68,7 @@ def parse_manifest(manifest):
 def deploy_webos(title, version, tv, debug, build_only, app):
 	print('Packaging...')
 	app_folder = "build.webos/%s" %("" if not app else app[1:])
-	os.system('$WEBOS_CLI_TV/ares-package %s -o %s' %(app_folder, app_folder))
+	run_cmd(f'$WEBOS_CLI_TV/ares-package {app_folder} -o {app_folder}')
 	app_id = parse_webos_appinfo(app_folder + '/appinfo.json')
 	print("Webos App ID:", app_id)
 	app_file = '%s_%s_all.ipk' %(app_id, version)
@@ -77,10 +77,11 @@ def deploy_webos(title, version, tv, debug, build_only, app):
 		print('IPK file bundled')
 	else:
 		print('Installing...')
-		os.system('$WEBOS_CLI_TV/ares-install %s %s' %(app_file_path, ("-d %s" %tv) if tv else ''))
-		os.system('$WEBOS_CLI_TV/ares-launch %s %s' %(app_id, ("-d %s" %tv) if tv else ''))
+		device = f'-d {tv}' if tv else ''
+		run_cmd(f'$WEBOS_CLI_TV/ares-install {app_file_path} {device}')
+		run_cmd(f'$WEBOS_CLI_TV/ares-launch {app_id} {device}')
 		if debug is True:
-			os.system('$WEBOS_CLI_TV/ares-inspect %s %s' %(app_id, ("-d %s" %tv) if tv else ''))
+			run_cmd(f'$WEBOS_CLI_TV/ares-inspect {app_id} {device}')
 
 
 def deploy_tizen(title, tv, profile, build_only, app):
