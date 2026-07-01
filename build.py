@@ -117,7 +117,7 @@ def deploy_tizen(title, tv, profile, build_only, app):
 	print('✅ Packaged file:', wgt_file)
 
 	print('Installing...')
-	run_cmd('tizen install -n %s -t %s' %(wgt_file, tv))
+	run_cmd(f'tizen install -n %s -t %s' %(wgt_file, tv))
 	print('✅ Installed')
 
 
@@ -149,9 +149,9 @@ def zip_dir(title, version, platform, app, withFolder):
 			os.remove(result_zip)
 
 		if withFolder:
-			os.system('zip -r %s %s' %(result_zip, platform_folder))
+			run_cmd(f'zip -r {result_zip} {platform_folder}')
 		else:
-			os.system('zip -r %s *' %(result_zip))
+			run_cmd(f'zip -r {result_zip} *')
 		return True
 	else:
 		return False
@@ -189,24 +189,24 @@ def deploy_electron(app, electronjs_os):
 	if electronjs_os == 'windows':
 		print('Make windows build...')
 		shutil.rmtree('./electron_win')
-		os.system('mkdir ./electron_win')
-		os.system('cp -r ./smart-tv-deployer/dist/electronjs/windows/* ./electron_win/.')
-		os.system('cp -r %s ./electron_win/resources/app' %(platform_folder))
+		run_cmd(f'mkdir ./electron_win')
+		run_cmd(f'cp -r ./smart-tv-deployer/dist/electronjs/windows/* ./electron_win/.')
+		run_cmd(f'cp -r {platform_folder} ./electron_win/resources/app')
 	if electronjs_os == "macos":
 		print('Make MacOS build...')
 		shutil.rmtree('./electron_macos')
-		os.system('mkdir ./electron_macos')
-		os.system('unzip ./smart-tv-deployer/dist/electronjs/macos/Electron.app.zip -d ./electron_macos/.')
-		os.system('cp -r %s ./electron_macos/Electron.app/Contents/Resources/app' %(platform_folder))
+		run_cmd(f'mkdir ./electron_macos')
+		run_cmd(f'unzip ./smart-tv-deployer/dist/electronjs/macos/Electron.app.zip -d ./electron_macos/.')
+		run_cmd(f'cp -r {platform_folder} ./electron_macos/Electron.app/Contents/Resources/app')
 	else:
 		os.chdir(platform_folder)
-		os.system('npm install')
-		os.system('npm start')
+		run_cmd('npm install')
+		run_cmd('npm start')
 
 
 def deploy_android(platform, title, release, build_only, app, android_build):
 	platform_folder = './build.' + platform + app
-	os.system('cd %s' %(platform_folder))
+	run_cmd(f'cd {platform_folder}')
 	os.chdir(platform_folder)
 
 	if path.exists(title):
@@ -216,7 +216,7 @@ def deploy_android(platform, title, release, build_only, app, android_build):
 	print('Run build.py...')
 	app_folder = title if not app else app[1:]
 	release_arg = '--release' if release else ''
-	os.system('./build.py --app %s --title %s %s' %(app_folder, app_folder, release_arg))
+	run_cmd(f'./build.py --app {app_folder} --title {app_folder} {release_arg}')
 	build_type = 'release' if release else 'debug'
 	output_path = '%s/platforms/android/app/build/outputs/' %title
 	apk_file_path = '%s/apk/%s/app-%s.apk' %(output_path, build_type, build_type)
@@ -224,23 +224,24 @@ def deploy_android(platform, title, release, build_only, app, android_build):
 	if path.exists(apk_file_path):
 		if build_only:
 			print('Building apk file...')
-			os.system('cp %s ./%s.apk' %(apk_file_path, app_folder))
+			run_cmd(f'cp {apk_file_path} ./{app_folder}.apk')
 		else:
 			print('Install via adb...')
-			os.system('adb install -r %s' %apk_file_path)
+			run_cmd(f'adb install -r {apk_file_path}')
 	elif path.exists(aab_file_path):
 		if build_only:
 			print('Building aab file...')
-			os.system('cp %s ./%s.aab' %(aab_file_path, app_folder))
+			run_cmd(f'cp {aab_file_path} ./{app_folder}.aab')
 		else:
 			print('Install via adb...')
 			print('Installing aab files via adb is not supported yet. Please use apk file or upload aab to Google Play Console.')
 	else:
 		print('No .(apk|aab) file at path %s' %output_path)
 
+
 def deploy_android_native(title, release, app):
-	os.system('./qmlcore/platform/pure.femto/build-android-native.sh')
-	os.system('adb install ./build.pure.femto.%s/app/app/build/outputs/apk/debug/app-debug.apk' %(app))
+	run_cmd(f'./qmlcore/platform/pure.femto/build-android-native.sh')
+	run_cmd(f'adb install ./build.pure.femto.{app}/app/app/build/outputs/apk/debug/app-debug.apk')
 
 
 def deploy_ios(title, app):
@@ -253,7 +254,7 @@ def deploy_ios(title, app):
 
 	print('Run build.py...')
 	app_folder = title if not app else app[1:]
-	os.system('../qmlcore/platform/ios/build.py --app %s --title %s' %(app_folder, app_folder))
+	run_cmd(f'../qmlcore/platform/ios/build.py --app {app_folder} --title {app_folder}')
 
 
 parser = argparse.ArgumentParser('smart-tv-deploy script')
@@ -313,7 +314,9 @@ if path.exists(manifest_path):
 	if release:
 		params += ' -r '
 
-	os.system('./qmlcore/build %s -p %s -j %s %s %s' %('-m' if minify else '', platform, jobs, params, app if app is not None else ''))
+	minify_arg = '-m' if minify else ''
+	app_arg = app if app is not None else ''
+	run_cmd(f'./qmlcore/build {minify_arg} -p {platform} -j {jobs} {params} {app_arg}')
 	print('============== ' + platform.upper() + ' DEPLOYMENT ==============')
 
 	if platform == 'webos':
