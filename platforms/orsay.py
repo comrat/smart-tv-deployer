@@ -1,5 +1,4 @@
 from .base import BasePlatform
-from utils.cmd import run_cmd
 from utils.archive import zip_dir
 import os
 

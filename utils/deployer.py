@@ -11,10 +11,10 @@ from platforms.netcast import NetCastPlatform
 from platforms.tizen import TizenPlatform
 from platforms.webos import WebOSPlatform
 from platforms.orsay import OrsayPlatform
+from platforms.webextension import WebExtensionPlatform
 # from platforms.android import AndroidDeployer, AndroidNativeDeployer
 # from platforms.ios import iOSDeployer
 # from platforms.electronjs import ElectronJSDeployer
-# from platforms.webextension import WebExtensionDeployer
 
 
 class SmartTVDeployer:    
@@ -23,7 +23,7 @@ class SmartTVDeployer:
         'tizen': TizenPlatform,
         'netcast': NetCastPlatform,
         'orsay': OrsayPlatform,
-        # 'webextension': WebExtensionPlatform,
+        'webextension': WebExtensionPlatform,
         # 'android': AndroidDeployer,
         # 'androidtv': AndroidDeployer,
         # 'androidnative': AndroidNativeDeployer,
