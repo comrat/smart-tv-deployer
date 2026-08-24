@@ -12,7 +12,7 @@ from platforms.tizen import TizenPlatform
 from platforms.webos import WebOSPlatform
 from platforms.orsay import OrsayPlatform
 from platforms.webextension import WebExtensionPlatform
-# from platforms.android import AndroidDeployer, AndroidNativeDeployer
+from platforms.androidnative import AndroidNativePlatform
 # from platforms.ios import iOSDeployer
 # from platforms.electronjs import ElectronJSDeployer
 
@@ -24,9 +24,9 @@ class SmartTVDeployer:
         'netcast': NetCastPlatform,
         'orsay': OrsayPlatform,
         'webextension': WebExtensionPlatform,
+        'androidnative': AndroidNativePlatform,
         # 'android': AndroidDeployer,
         # 'androidtv': AndroidDeployer,
-        # 'androidnative': AndroidNativeDeployer,
         # 'ios': iOSDeployer,
         # 'electronjs': ElectronJSDeployer,
         # 'vidaa': None,  # Специальный случай
@@ -102,7 +102,9 @@ class SmartTVDeployer:
     def run(self):
         try:
             self.load_manifest()
-            self.build_project()
+            platform = self.args.platform
+            if platform != "androidnative":
+                self.build_project()
             self.deploy()
         except KeyboardInterrupt:
             print('\n\n⚠️ Deployment interrupted by user')
