@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from __future__ import print_function
 
 import sys
@@ -13,8 +11,8 @@ from platforms.webos import WebOSPlatform
 from platforms.orsay import OrsayPlatform
 from platforms.webextension import WebExtensionPlatform
 from platforms.androidnative import AndroidNativePlatform
+from platforms.electronjs import ElectronJSPlatform
 # from platforms.ios import iOSDeployer
-# from platforms.electronjs import ElectronJSDeployer
 
 
 class SmartTVDeployer:    
@@ -25,11 +23,11 @@ class SmartTVDeployer:
         'orsay': OrsayPlatform,
         'webextension': WebExtensionPlatform,
         'androidnative': AndroidNativePlatform,
+        'vidaa': None,
+        'electronjs': ElectronJSPlatform,
         # 'android': AndroidDeployer,
         # 'androidtv': AndroidDeployer,
         # 'ios': iOSDeployer,
-        # 'electronjs': ElectronJSDeployer,
-        # 'vidaa': None,  # Специальный случай
     }
 
     def __init__(self, args):

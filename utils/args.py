@@ -21,22 +21,17 @@ def get_args():
     return parser.parse_args()
 
 def validate_args(args):
-    tizen_profile = args.tizen_profile
     electronjs_os = args.electronjs_os
     platform = args.platform
-    tv = args.tv
-    release = args.release
-    # build_only = args.buildonly
-    debug = args.debug
-    jobs = args.jobs
-    minify = args.minify
-    app = args.app
-    baseurl = args.baseurl
-    width = args.width
-    height = args.height
 
     if platform is None:
         print(f"❌ Platform not found. Provide the platform name with -p flag")
         sys.exit(1)
 
-    #TODO: check electronjs target OS for the electron js
+    if platform == 'electronjs':
+        if electronjs_os is None:
+            print(f"⚠️  'electronjs_os' is not deined 'windows' is used by default")
+            electronjs_os = 'windows'
+        elif electronjs_os != 'windows' and electronjs_os != 'ios':
+            print(f"❌ '{electronjs_os}' ElectronJS OS platform is not supported")
+            sys.exit(1)
